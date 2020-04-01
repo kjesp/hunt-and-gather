@@ -8,20 +8,19 @@ CREATE TABLE `endUser` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `endUser_role_id` int NOT NULL,
   `email` varChar(100) NOT NULL,
-  `password` varChar(100) NOT NULL,
-  `country` varChar(25) NOT NULL,
+  `pw` varChar(100) NOT NULL,
   `city` varChar(25) NOT NULL,
-  `state` varChar(2),
+  `state` varChar(2) NOT NULL,
+  `zip` varChar(5) NOT NULL,
   `registration_date` datetime NOT NULL DEFAULT (now())
 );
-
-
 
 CREATE TABLE `restaurant` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT, 
   `name` varChar(100) NOT NULL,
    `city` varChar(50) NOT NULL,
   `state` varChar(2) NOT NULL,
+  `zip` varChar(5),
   `contact_person_first` varChar(100),
   `contact_person_last` varChar(100),
   `phone` int(10),
@@ -129,17 +128,17 @@ INSERT INTO endUserType VALUES
 (2, 'Administrator');
 
 insert into endUser VALUES
-(1,2, 'admin@st.com', 'pass', 'United States', 'Detroit', 'MI', NOW()),
-(2,1, 'aa@st.com', 'pass', 'United States', 'Duluth', 'MN', NOW()),
-(3,1, 'bb@st.com', 'pass', 'United States', 'Milwaukee', 'WI', NOW()),
-(4,1, 'cc@st.com', 'pass', 'United States', 'Fort Walton Beach', 'FL', NOW()),
-(5,1, 'dd@st.com', 'pass', 'United States', 'St. Paul', 'MN', NOW());
+(1,2, 'admin@st.com', 'pass', 'Detroit', 'MI', 48127, NOW()),
+(2,1, 'aa@st.com', 'pass', 'Duluth', 'MN', 55805, NOW()),
+(3,1, 'bb@st.com', 'pass', 'Milwaukee', 'WI', 53201, NOW()),
+(4,1, 'cc@st.com', 'pass', 'Fort Walton Beach', 'FL', 32547, NOW()),
+(5,1, 'dd@st.com', 'pass', 'St. Paul', 'MN', 55101, NOW());
 
 insert into restaurant VALUES
-(1,'Dunkin Donuts', 'Duluth', 'MN', null, null, null, '0', NOW()),
-(2,'Pizza Luce', 'Duluth', 'MN', null, null, null, '0', NOW()),
-(3,"McDonald's", 'Superior', 'WI', '', '', null, '0', NOW()),
-(4,'Test Restaurant', 'TestCity', 'WI', "Nancy", "Kerrigan", "1112223344", '0', NOW());
+(1,'Dunkin Donuts', 'Duluth', 'MN', 55810, null, null, null, '0', NOW()),
+(2,'Pizza Luce', 'Duluth', 'MN', 55802, null, null, null, '0', NOW()),
+(3,"McDonald's", 'Superior', 'WI', 54880, '', '', null, '0', NOW()),
+(4,'Test Restaurant', 'TestCity', 'WI', null, "Nancy", "Kerrigan", "1112223344", '0', NOW());
 
 insert into meal VALUES
 (1,'Dunkin Burrito Bowl', 1, 1),
@@ -251,9 +250,6 @@ insert into foodProductAllergen VALUES
 (1, 11, 2),
 (2, 1, 2),
 (3, 2, 3);
-
-
-
 
 
 -- create the endUsers and grant privileges to those endUsers

@@ -1,0 +1,11 @@
+ul{
+    list-style-type: none; 
+}
+
+p{
+    color: red;
+}
+
+footer p{
+    color: black;
+}
