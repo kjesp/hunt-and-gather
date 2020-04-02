@@ -2,6 +2,7 @@
 require('../model/database.php');
 require('../model/meal.php');
 require('../model/meal_db.php');
+require('../model/allergen.php');
         
 if(session_id() == ''){
     $lifetime = 60 * 60 * 24 * 14;    //two weeks
@@ -62,32 +63,53 @@ switch($controllerChoice) {
     
     case "full_meal_submission":
         //insert meal and restaurant
+        //still have to add to mealAllergen and mealReataurant Tables...i think
         break;
     
     
     case "redirect_meal_to_restaurant_add_form";
+        /*in this case, the user added meal info, but couldn't find t
+         * restaurant in the drop-down. This method saves all the necessary meal data to the session,
+        then redirects to the restaurant add form. All the DB inserts will
+        take place in restaurant_manager/indexp.php     */
+        
+        //get the checked allergens and add to an array for mealAllergen table
+        $selectedAllergens = array();
+            if(!empty($_POST['check_list'])){
+            // Loop to store and display values of individual checked checkbox.
+                foreach($_POST['check_list'] as $selected){
+//                    $allergen = new Allergen(
+//                            0,$selected);
+                    
+                    $selectedAllergens[]= $selected;
+                }
+            }            
+                
+        //info for review table
+        $rating = filter_input(INPUT_POST, 'rating');
+        $review = filter_input(INPUT_POST, 'review');
+
+        //info for meal table
         $id=0;        
         $mealName = filter_input(INPUT_POST, 'meal_name');
-        $restaurantName = filter_input(INPUT_POST, 'name');
-        $city = filter_input(INPUT_POST, 'city');
-        $state = filter_input(INPUT_POST, 'state');
-        $zip = filter_input(INPUT_POST, 'zip');
-        $contactFirst = null;
-        $contactLast = null;
-        $phone = null;
-        $isRegistered = false;
+        $restaurantId = null;
+        $isOfficial = false;
         
-        $restaurant = new Restaurant($id, $restaurantName, $city, $state,
-                $zip, $contactFirst, $contactLast, $phone, $isRegistered);
         
-        MealDB::add_meal($meal);
-        //the add_meal method inserts the last inserted id into the user object
-     
-        $_SESSION['meal_id'] = $meal->getId();
+        //validate meal here. If valid, create meal object
         
+        
+        //create meal object for saving to session
+        $meal = new Meal($id, $mealName, $restaurantId, $isOfficial);        
+        //MealDB::add_meal($meal); //the add_meal method inserts the last inserted id into the user object
+        
+        
+        //$_SESSION['meal_id'] = $meal->getId();        
         $_SESSION['meal'] = $meal;
+        $_SESSION['names_of_allergens_not_in_meal'] = $selectedAllergens;
+        $_SESSION['rating'] = $rating;
+        $_SESSION['review'] = $review;
        
-        //still have to add to mealAllergen and mealReataurant Tables...i think
         require_once("../restaurant_manager/restaurant_add_form.php");
         break;
     

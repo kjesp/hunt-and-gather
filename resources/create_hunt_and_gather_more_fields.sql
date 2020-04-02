@@ -2,7 +2,7 @@
 
 DROP DATABASE IF EXISTS HuntAndGather;
 CREATE DATABASE HuntAndGather;
-USE HuntAndGather;  -- MySQL command
+USE HuntAndGather;  
 
 CREATE TABLE `endUser` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -24,7 +24,7 @@ CREATE TABLE `restaurant` (
   `contact_person_first` varChar(100),
   `contact_person_last` varChar(100),
   `phone` int(10),
-  `isRegistered` tinyint NOT NULL,
+  `is_registered` bit NOT NULL,
   `registration_date` datetime
 );
 
@@ -38,12 +38,6 @@ CREATE TABLE `review` (
   `registration_date` timestamp
 );
 
-CREATE TABLE `foodProduct` (
-  `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `name` varChar(100) NOT NULL,
-  `upc` int(11)
-);
-
 CREATE TABLE `endUserType` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `description` varChar(100)
@@ -53,7 +47,7 @@ CREATE TABLE `meal` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `name` varChar(100) NOT NULL,
   `restaurant_id` int(11),
-  `isOfficial` bit NOT NULL
+  `is_official` bit NOT NULL
 );
 
 CREATE TABLE `mealRestaurant` (
@@ -62,22 +56,10 @@ CREATE TABLE `mealRestaurant` (
   `restaurant_id` int(11) NOT NULL
 );
 
-CREATE TABLE `foodProductMeal` (
-  `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `foodProduct_id` int(11) NOT NULL,
-  `meal_id` int(11) NOT NULL
-);
-
 CREATE TABLE `allergenMeal` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `allergen_id` int(11) NOT NULL,
   `meal_id` int(11) NOT NULL
-);
-
-CREATE TABLE `foodProductAllergen` (
-  `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `allergen_id` int(11) NOT NULL,
-  `foodProduct_id` int(11) NOT NULL
 );
 
 CREATE TABLE `endUserAllergen` (
@@ -98,14 +80,6 @@ ALTER TABLE `mealRestaurant` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `resta
 ALTER TABLE `meal` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
 
 ALTER TABLE `mealRestaurant` ADD FOREIGN KEY (`meal_id`) REFERENCES `meal` (`id`);
-
-ALTER TABLE `foodProductAllergen` ADD FOREIGN KEY (`foodProduct_id`) REFERENCES `foodProduct` (`id`);
-
-ALTER TABLE `foodProductAllergen` ADD FOREIGN KEY (`allergen_id`) REFERENCES `allergen` (`id`);
-
-ALTER TABLE `foodProductMeal` ADD FOREIGN KEY (`foodProduct_id`) REFERENCES `foodProduct` (`id`);
-
-ALTER TABLE `foodProductMeal` ADD FOREIGN KEY (`meal_id`) REFERENCES `meal` (`id`);
 
 ALTER TABLE `allergenMeal` ADD FOREIGN KEY (`allergen_id`) REFERENCES `allergen` (`id`);
 
@@ -148,12 +122,6 @@ insert into meal VALUES
 (5,'Meal with no allergens', 4, 1),
 (6,'Unofficial meal', 1, 0);
 
-
-insert into foodProduct VALUES
-(1,'Haribo Gummy Bears', null),
-(2,'flour', null),
-(3,'Silk Soymilk', null);
-
 insert into review VALUES
 (1, 1, 1, 1, 'this place does not have anything gluten free', 2, NOW()),
 (2, 1, 2, 2, 'lots of vegan and gf options!', 5, NOW()),
@@ -191,65 +159,8 @@ insert into allergen VALUES
 (28, 'balsamOfPeru'),
 (29, 'milk');
 
-insert into allergenMeal VALUES
-(1, 2, 3),
-(2, 29, 3),
-(3, 8, 3),
-(4, 10, 3),
-(5, 2, 1),
-(6, 29, 1),
-(7, 21, 3),
-(8, 1, 4),
-(9, 2, 4),
-(10, 3, 4),
-(11, 4, 4),
-(12, 5, 4),
-(13, 6, 4),
-(14, 7, 4),
-(15, 8, 4),
-(16, 9, 4),
-(17, 10, 4),
-(18, 11, 4),
-(19, 12, 4),
-(20, 13, 4),
-(21, 14, 4),
-(22, 15, 4),
-(23, 16, 4),
-(24, 17, 4),
-(25, 18, 4),
-(26, 19, 4),
-(27, 20, 4),
-(28, 21, 4),
-(29, 22, 4),
-(30, 23, 4), 
-(31, 24, 4), 
-(32, 25, 4), 
-(33, 26, 4), 
-(34, 27, 4), 
-(35, 28, 4), 
-(36, 29, 4), 
-(37, 8, 1);
 
 
-insert into endUserAllergen VALUES
-(1, 1, 1),
-(2, 1, 2),
-(3, 2, 7);
-
-insert into foodProductMeal VALUES
-(1, 1, 1),
-(2, 2, 1),
-(3, 3, 3);
-
-insert into mealRestaurant VALUES
-(1, 1, 1),
-(2, 2, 4),
-(3, 3, 3);
-
-insert into foodProductAllergen VALUES
-(1, 11, 2),
-(2, 1, 2),
-(3, 2, 3);
 
 
 -- create the endUsers and grant privileges to those endUsers

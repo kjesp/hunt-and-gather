@@ -18,7 +18,6 @@ require_once 'view/header.php';?>
 
 <h2>Home Page</h2>
     <form action="meal_manager/index.php" method="post">
-    <p>need to add form action (destination=search results)</p>
     <label>Search by city:</label>
     <input type="text" name="search">   
     <br>
@@ -34,6 +33,7 @@ require_once 'view/header.php';?>
     </fieldset> 
     <br>
     <br>
+    <p>address the issues i'm going to run into by listing things like 'dairy' and 'milk' separately...</p>
     <fieldset class="group"> 
             <legend>Avoid:</legend> 
             <ul class="checkbox">        

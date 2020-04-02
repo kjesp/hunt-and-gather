@@ -1,14 +1,20 @@
 <?php
 require('../model/database.php');
 require('../model/user.php');
+require('../model/restaurant.php');
 require('../model/user_db.php');
+require('../model/meal_db.php'); 
+require('../model/allergen_db.php');
+require('../model/join_table_db.php');
+require('../model/meal.php'); 
+require('../model/restaurant_db.php');
         
-//if(session_id() == ''){
-//    $lifetime = 60 * 60 * 24 * 14;    //two weeks
-//    session_set_cookie_params($lifetime, '/');
-//    session_start();    
-//}
-//
+if(session_id() == ''){
+    $lifetime = 60 * 60 * 24 * 14;    //two weeks
+    session_set_cookie_params($lifetime, '/');
+    session_start();    
+}
+
 //if (!isset($_SESSION['loggedIn'])){
 //    $_SESSION['loggedIn'] = false; 
 //    $_SESSION['fullName'] = ""; 
@@ -33,22 +39,51 @@ if($controllerChoice == NULL){
 
 switch($controllerChoice) {
        
-    case "submit_add_restaurant":
+    case "submit_add_meal_and_restaurant":
+        /*user has previously entered meal info, which is stored in session
+        this method retrieves that info and makes inserts to meal, restaurant, 
+        allergenMeal and mealRestaurant tables*/
+        $meal = new Meal(0, $_SESSION['meal']->getName(), null, false);         
+        
+        //get restaurant info
         $id=0;        
-        $mealName = filter_input(INPUT_POST, 'meal_name');  
-        $restuarantId = NULL;
-        $isOfficial = false;
+        $name = filter_input(INPUT_POST, 'name'); 
+        $city = filter_input(INPUT_POST, 'city'); 
+        $state = filter_input(INPUT_POST, 'state'); 
+        $zip = filter_input(INPUT_POST, 'zip');
+        $contactFirst = null;
+        $contactLast = null;
+        $phone = null;
+        $isRegistered = false;
         
-        $meal = new Meal($id, $mealName, $restuarantId, $isOfficial);
+ /***  validate here before adding to db. Meal info will have already been validated*****************************************************************************************************************************/
         
+        
+        $restaurant = new Restaurant($id, $name, $city, $state, $zip, $contactFirst, 
+                $contactLast, $phone, $isRegistered);
+        
+        
+        RestaurantDB::add_restaurant($restaurant); 
+        /*the add_restaurant method inserts the last inserted id into the user object
+        add it to the meal object before inserting meal*/
+        $meal->setRestaurant_id($restaurant->getId());
         MealDB::add_meal($meal);
-        //the add_meal method inserts the last inserted id into the user object
-     
-        $_SESSION['meal_id'] = $meal->getId();
+                           
+        //add to mealReataurant Table
+        JoinTableDb::insertMealRestaurantJoinTable($meal->getId(), $restaurant->getId());
         
-        $_SESSION['meal'] = $meal;
-       
-        //still have to add to mealAllergen and mealReataurant Tables...i think
+        /*get allergen info from session (this will be an array based on the
+        number of allergen checkboxes selected*/
+        $allergensSelected = $_SESSION['names_of_allergens_not_in_meal'];
+        
+        /*loop through array of strings and for each one, get the allergen id from the db
+        based on the name, then use the id to add allergen to allergenMeal table*/
+        foreach($allergensSelected as $name){
+            $allergenId = AllergenDB::getAllergenIdFromName($name);
+            JoinTableDb::insertAllergenMealJoinTable($allergenId, $meal->getId());
+        }
+        
+        $_SESSION['restaurant'] = $restaurant;
         
         require_once('restaurant_add_success.php');
         break;

@@ -15,6 +15,23 @@ class AllergenDB{
         $statement->closeCursor();
     }
     
+    public static function getAllergenIdFromName($allergenName){
+        $db= new Database();
+        $db= Database::getDB(); 
+           
+       $query = 'SELECT id from allergen
+               WHERE name = :name';
+
+        $statement = $db->prepare($query);
+        $statement->bindValue(':name', $allergenName);
+        $statement->execute();
+        $row = $statement->fetch();
+        $statement->closeCursor();
+        
+    return $row['id'];
+          
+    }
+    
     public static function getAllergenList(){
         $db= new Database();
         $db= Database::getDB(); 
@@ -37,5 +54,5 @@ class AllergenDB{
             return $allergens;
           
     }
-    
 }
+

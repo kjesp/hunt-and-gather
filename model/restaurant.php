@@ -2,22 +2,22 @@
 
 class Restaurant {
     private $id, $name, $city, $state, $zip, $contact_first_name, 
-            $contact_last_name, $phone, $is_registered, $registration_date;
+            $contact_last_name, $phone, $is_registered;
 
     public function __construct($id, $name, $city, $state, $zip, $contact_first_name, 
-            $contact_last_name, $phone, $is_registered, $registration_date) {
+            $contact_last_name, $phone, $is_registered) {
         
         $this->id = $id;
         $this->name = $name;
         $this->city = $city;
         $this->state = $state;
         $this->zip = $zip;
-        $this->contactFirstName = $contact_first_name;
-        $this->contactLastName = $contact_last_name;
+        $this->contact_first_name = $contact_first_name;
+        $this->contact_last_name = $contact_last_name;
         $this->phone = $phone;
-        $this->isRegistered = $is_registered;
-        $this->registration_date = $registration_date;
+        $this->is_registered = $is_registered;
             }
+           
             function getId() {
                 return $this->id;
             }
@@ -29,17 +29,13 @@ class Restaurant {
             function getCity() {
                 return $this->city;
             }
-            function getZip() {
-                return $this->zip;
-            }
 
-            function setZip($zip) {
-                $this->zip = $zip;
-            }
-
-            
             function getState() {
                 return $this->state;
+            }
+
+            function getZip() {
+                return $this->zip;
             }
 
             function getContact_first_name() {
@@ -58,10 +54,6 @@ class Restaurant {
                 return $this->is_registered;
             }
 
-            function getRegistration_date() {
-                return $this->registration_date;
-            }
-
             function setId($id) {
                 $this->id = $id;
             }
@@ -76,6 +68,10 @@ class Restaurant {
 
             function setState($state) {
                 $this->state = $state;
+            }
+
+            function setZip($zip) {
+                $this->zip = $zip;
             }
 
             function setContact_first_name($contact_first_name) {
@@ -94,10 +90,6 @@ class Restaurant {
                 $this->is_registered = $is_registered;
             }
 
-            function setRegistration_date($registration_date) {
-                $this->registration_date = $registration_date;
-            }
 
-
-
+            
 }

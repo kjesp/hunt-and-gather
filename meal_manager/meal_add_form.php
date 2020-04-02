@@ -25,14 +25,14 @@ require_once '../view/header.php';?>
         
 <div class="form-row">
         <label>Meal Name:</label>        
-        <input type="text" name="meal_name"><br>
-        
+        <input type="text" name="meal_name"><br>        
 </div>        
+    
     <p>I'd rather this be a select here with 
                  multiline selection (without holding control) possible...JavaScript?</p>
      
-    <fieldset class="group"> 
-        
+    
+    <fieldset class="group">         
             <legend>This meal does NOT contain:</legend> 
             <h3>Just choose what matters to you - others can adjust this meal too.</h3>
             <ul class="checkbox">                        

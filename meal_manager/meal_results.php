@@ -20,8 +20,7 @@ if(session_id() == ''){
     <option>Rating</option>
 </select>
 
-<p>Know something we don't?</p>
-<p>Help other users, and add it!</p>
+<p>Know something we don't? Help other users, and add it!</p>
 
 <a href="./meal_manager/meal_add_form.php">Add a Meal</a> 
 <br>

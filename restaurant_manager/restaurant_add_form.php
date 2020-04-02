@@ -41,7 +41,7 @@ $meal = $_SESSION['meal'];
         <input type="submit" value="Add Restaurant" id="button"><br>  
         
         <input type="hidden" name="controllerRequest" 
-                value="submit_add_restaurant">
+                value="submit_add_meal_and_restaurant">
     </form>
 
     
