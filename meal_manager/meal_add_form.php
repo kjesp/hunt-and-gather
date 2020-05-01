@@ -25,7 +25,7 @@ require_once '../view/header.php';?>
         
 <div class="form-row">
         <label>Meal Name:</label>        
-        <input type="text" name="meal_name"><br>        
+        <input required type="text" name="meal_name"><br>        
 </div>        
     
     <p>I'd rather this be a select here with 

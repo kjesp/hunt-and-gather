@@ -20,4 +20,46 @@ class ReviewDB{
         $statement->execute();
         $statement->closeCursor();
     }
+    
+      public static function getMealRatings($mealId){
+        $db = Database::getDB();
+        
+        $query =    'select rating from review
+                    where meal_id = :mealId';
+        
+        $statement = $db->prepare($query);
+        $statement->bindValue(':mealId', $mealId);
+        $statement->execute();
+        $records = $statement->fetchAll();
+        $statement->closeCursor();
+        
+        $ratingsArray = array();
+        
+        foreach ($records as $record) {
+            $ratingsArray[] = $record['rating'];
+        }
+        return $ratingsArray;
+    }
+
+    public static function getMealReviews($mealId){
+        $db = Database::getDB();
+        
+        $query =    'select comment from review
+                    where meal_id = :mealId';
+        
+        $statement = $db->prepare($query);
+        $statement->bindValue(':mealId', $mealId);
+        $statement->execute();
+        $records = $statement->fetchAll();
+        $statement->closeCursor();
+        
+        $reviewsArray = array();
+        
+        foreach ($records as $record) {
+            $reviewsArray[] = $record['comment'];
+        }
+        return $reviewsArray;
+        
+    }
+
 }

@@ -35,7 +35,7 @@ CREATE TABLE `review` (
   `meal_id` int(11),
   `comment` varchar(300),
   `rating` int(11),
-  `registration_date` timestamp
+  `date_added` datetime NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE `endUserType` (
@@ -47,7 +47,8 @@ CREATE TABLE `meal` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `name` varChar(100) NOT NULL,
   `restaurant_id` int(11),
-  `is_official` bit NOT NULL
+  `is_official` bit NOT NULL,
+  `date_added` datetime NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE `mealRestaurant` (
@@ -109,18 +110,18 @@ insert into endUser VALUES
 (5,1, 'dd@st.com', 'pass', 'St. Paul', 'MN', 55101, NOW());
 
 insert into restaurant VALUES
-(1,'Dunkin Donuts', 'Duluth', 'MN', 55810, null, null, null, '0', NOW()),
-(2,'Pizza Luce', 'Duluth', 'MN', 55802, null, null, null, '0', NOW()),
-(3,"McDonald's", 'Superior', 'WI', 54880, '', '', null, '0', NOW()),
-(4,'Test Restaurant', 'TestCity', 'WI', null, "Nancy", "Kerrigan", "1112223344", '0', NOW());
+(1,'Dunkin Donuts', 'Duluth', 'MN', 55810, null, null, null, 0, NOW()),
+(2,'Pizza Luce', 'Duluth', 'MN', 55802, null, null, null, 0, NOW()),
+(3,"McDonald's", 'Superior', 'WI', 54880, '', '', null, 0, NOW()),
+(4,'Test Restaurant', 'TestCity', 'WI', null, "Nancy", "Kerrigan", "1112223344", 0, NOW());
 
 insert into meal VALUES
-(1,'Dunkin Burrito Bowl', 1, 1),
-(2,'Test Meal', 1, 1),
-(3,'WholegrainSausage McMuffin with Egg', 3, 1),
-(4,'Meal with all allergens', 4, 1),
-(5,'Meal with no allergens', 4, 1),
-(6,'Unofficial meal', 1, 0);
+(1,'Dunkin Burrito Bowl', 1, 1, NOW()),
+(2,'Test Meal', 1, 1, NOW()),
+(3,'WholegrainSausage McMuffin with Egg', 3, 1, NOW()),
+(4,'Meal with all Allergens', 4, 1, NOW()),
+(5,'Meal with no Allergens', 4, 1, NOW()),
+(6,'Unofficial Meal', 1, 0, NOW());
 
 insert into review VALUES
 (1, 1, 1, 1, 'this place does not have anything gluten free', 2, NOW()),
@@ -129,37 +130,84 @@ insert into review VALUES
 (4, 2, 4, 5, 'everything allergen free', 1, NOW());
 
 insert into allergen VALUES
-(1, 'dairy'),
-(2, 'egg'),
-(3, 'peanut'),
-(4, 'tree nut'),
-(5, 'shellfish'),
-(6, 'beef'),
-(7, 'lactose'),
-(8, 'soy'),
-(9, 'corn'),
-(10, 'wheat'),
-(11, 'gluten'),
-(12, 'fish'),
-(13, 'gelatin'),
-(14, 'sesame'),
-(15, 'caraway'),
-(16, 'coriander'),
-(17, 'mustard'),
-(18, 'garlic'),
-(19, 'sunflower'),
-(20, 'poppy'),
-(21, 'pork'),
-(22, 'chicken'),
-(23, 'msg'),
-(24, 'sulphite'),
-(25, 'oat'),
-(26, 'yeast'),
-(27, 'rice'),
-(28, 'balsamOfPeru'),
-(29, 'milk');
+(1, 'Dairy'),
+(2, 'Egg'),
+(3, 'Peanut'),
+(4, 'Tree nut'),
+(5, 'Shellfish'),
+(6, 'Beef'),
+(7, 'Lactose'),
+(8, 'Soy'),
+(9, 'Corn'),
+(10, 'Wheat'),
+(11, 'Fluten'),
+(12, 'Fish'),
+(13, 'Gelatin'),
+(14, 'Sesame'),
+(15, 'Caraway'),
+(16, 'Coriander'),
+(17, 'Mustard'),
+(18, 'Garlic'),
+(19, 'Sunflower'),
+(20, 'Poppy'),
+(21, 'Pork'),
+(22, 'Chicken'),
+(23, 'MSG'),
+(24, 'Sulphite'),
+(25, 'Oat'),
+(26, 'Yeast'),
+(27, 'Rice'),
+(28, 'Balsam of Peru'),
+(29, 'Milk');
 
+insert into allergenMeal VALUES
+(1, 2, 3),
+(2, 29, 3),
+(3, 8, 3),
+(4, 10, 3),
+(5, 2, 1),
+(6, 29, 1),
+(7, 21, 3),
+(8, 1, 4),
+(9, 2, 4),
+(10, 3, 4),
+(11, 4, 4),
+(12, 5, 4),
+(13, 6, 4),
+(14, 7, 4),
+(15, 8, 4),
+(16, 9, 4),
+(17, 10, 4),
+(18, 11, 4),
+(19, 12, 4),
+(20, 13, 4),
+(21, 14, 4),
+(22, 15, 4),
+(23, 16, 4),
+(24, 17, 4),
+(25, 18, 4),
+(26, 19, 4),
+(27, 20, 4),
+(28, 21, 4),
+(29, 22, 4),
+(30, 23, 4), 
+(31, 24, 4), 
+(32, 25, 4), 
+(33, 26, 4), 
+(34, 27, 4), 
+(35, 28, 4), 
+(36, 29, 4), 
+(37, 8, 1);
 
+insert into endUserAllergen VALUES
+(1, 1, 1),
+(2, 1, 2),
+(3, 2, 7);
+
+insert into mealRestaurant VALUES
+(1, 1, 1),
+(2, 2, 4),
+(3, 3, 3);
 
 
 
@@ -168,5 +216,3 @@ insert into allergen VALUES
 -- ON HuntAndGather.*
 -- TO mgs_User@localhost
 -- IDENTIFIED BY 'pa55word';
-
-

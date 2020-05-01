@@ -3,6 +3,11 @@ require('../model/database.php');
 require('../model/meal.php');
 require('../model/meal_db.php');
 require('../model/allergen.php');
+require('../model/allergen_db.php');
+require('../model/review_db.php');
+require('../model/restaurant_db.php');
+require('../model/restaurant.php');
+
         
 if(session_id() == ''){
     $lifetime = 60 * 60 * 24 * 14;    //two weeks
@@ -44,8 +49,81 @@ else if(isset($_POST["redirect_meal_to_restaurant_add_form"])){
 
 switch($controllerChoice) {
        
-    case "search":
+    case "search":    
+        $message = "";  
+        $searchLocation = filter_input(INPUT_POST, 'search');
+        
+        
+        //if any allergens were selected, put them in an array (string array of names)
+         if(isset($_POST['allergenChecklist'])) {
+            $allergenNameArray = $_POST['allergenChecklist']; 
+            
+            
+            //get an array of allergenID's to pass to the search method
+            $allergenIDArray = array();            
+            foreach($allergenNameArray as $allergenName){
+                array_push($allergenIDArray, AllergenDB::getAllergenIdFromName($allergenName));
+            }
+            
+            //loop through name id array and add to string for select query
+             $stringListOfAllergensWithOr = "";
+             foreach($allergenIDArray as $allergenID){
+                $stringListOfAllergensWithOr = $stringListOfAllergensWithOr." or ".$allergenID;
+                //$mealID = MealDB::getSearchResultsByAllergens($allergenName);
+//                array_push($mealIdArray, MealDB::getSearchResultsByAllergens($allergenName));
+            }
+            
+           //trim query so it dosn't have an empty ' or ' at the beginning 
+           $trimmedIdListOfAllergens = substr($stringListOfAllergensWithOr, 4);
+            
+           //use trimmed string to query database and return an array of appropriate meals to display
+            $meals = MealDB::getSearchResultsByAllergens($trimmedIdListOfAllergens);
+            
+            //foreach meal in meals, get the restuarant id, use the id to retrieve the restaruant f/
+            //db, and add the restaurant to restaurants array.
+            $restaurantsArray = array();
+            foreach($meals as $meal){
+              array_push($restaurantsArray, RestaurantDB::getRestaurantById($meal->getRestaurant_id())); 
+            }            
+         }
+         
+         else{
+             $message = "No allergens selected. Here is a full list of meals and restaurants:";
+             $meals = MealDB::getMealList();
+             }
+            
+            $_SESSION['message'] = $message;
+            $_SESSION['allergensChosen'] = $allergenNameArray;
+            $_SESSION['meals'] = $meals;
+            $_SESSION['restaurants'] = $restaurantsArray;
         require_once('meal_results.php');
+        break;
+    
+    case "get_meal_details":
+        $mealId = filter_input(INPUT_POST, 'meal_id');
+        $meal = MealDB::getMealById($mealId);
+        
+        //array of allergen names in meal
+        $allergenNamesArray = AllergenDB::getAllergenNamesForMeal($mealId);
+        
+        //get array of all ratings of meal
+        $ratingsArray = ReviewDB::getMealRatings($mealId);
+        
+        $avgRating = null;
+        //get average of ratings
+        if(count($ratingsArray) > 0){
+            $avgRating = array_sum($ratingsArray) / count($ratingsArray);
+        }        
+        
+        //get reviews for meal, ordered by newest to oldest
+        $reviewsArray = ReviewDB::getMealReviews($mealId);
+        
+        $_SESSION['reviewsForMeal'] = $reviewsArray;
+        $_SESSION['averageRating'] = $avgRating;
+        $_SESSION['meal'] = $meal;
+        $_SESSION['allergensInMeal'] = $allergenNamesArray;
+        
+        require_once("meal_detail.php");
         break;
     
     case "addSearchCategory":
@@ -57,7 +135,7 @@ switch($controllerChoice) {
         break;
     
     case "submit_review":
-        //add review to database based on meal id in parameter
+        //add review to database based on meal ID in parameter
         require_once("../index.php");
         break;
     
@@ -95,12 +173,12 @@ switch($controllerChoice) {
         $restaurantId = null;
         $isOfficial = false;
         
-        
-        //validate meal here. If valid, create meal object
-        
+        //capitalize the words in the name if they aren't already
+        $lowerCaseMealName = strtolower($mealName);
+        $firstLettersCapitalMealName = ucwords($lowerCaseMealName);        
         
         //create meal object for saving to session
-        $meal = new Meal($id, $mealName, $restaurantId, $isOfficial);        
+        $meal = new Meal($id, $firstLettersCapitalMealName, $restaurantId, $isOfficial, null);        
         //MealDB::add_meal($meal); //the add_meal method inserts the last inserted id into the user object
         
         

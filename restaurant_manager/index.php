@@ -43,7 +43,7 @@ switch($controllerChoice) {
         /*user has previously entered meal info, which is stored in session
         this method retrieves that info and makes inserts to meal, restaurant, 
         allergenMeal and mealRestaurant tables*/
-        $meal = new Meal(0, $_SESSION['meal']->getName(), null, false);         
+        $meal = new Meal(0, $_SESSION['meal']->getName(), null, false, null);         
         
         //get restaurant info
         $id=0;        
@@ -57,9 +57,32 @@ switch($controllerChoice) {
         $isRegistered = false;
         
  /***  validate here before adding to db. Meal info will have already been validated*****************************************************************************************************************************/
+    //capitalize the words in the name if they aren't already
+        $lowerCaseRestName = strtolower($name);
+        $firstLettersCapitalRestName = ucwords($lowerCaseRestName); 
+        
+         //capitalize the words in the city if they aren't already
+        $lowerCaseCity = strtolower($city);
+        $firstLettersCapitalCity = ucwords($lowerCaseCity); 
+        
+        //capitalize the words in the state, city if they aren't already
+        $upperCaseState = strtoupper($state);         
+
+    //look for duplicate: if $name AND $city AND $state match db entry, return restaurant
+        $duplicateRestaurantID = RestaurantDB::searchForDuplicate($firstLettersCapitalRestName, $firstLettersCapitalCity, $upperCaseState );
         
         
-        $restaurant = new Restaurant($id, $name, $city, $state, $zip, $contactFirst, 
+    //if duplicate, reload restaurant page with link and message
+        
+        
+           
+        
+          
+        
+/***duplicate above code for contact first and last name            ***/
+        
+        
+        $restaurant = new Restaurant($id, $firstLettersCapitalRestName, $firstLettersCapitalCity, $upperCaseState, $zip, $contactFirst, 
                 $contactLast, $phone, $isRegistered);
         
         
@@ -86,6 +109,19 @@ switch($controllerChoice) {
         $_SESSION['restaurant'] = $restaurant;
         
         require_once('restaurant_add_success.php');
+        break;
+        
+        
+        
+    case "get_meals_for_restaurant_by_id":
+        $restaurantId = filter_input(INPUT_POST, 'restaurant_id');
+        
+        $restaurant = RestaurantDB::getRestaurantById($restaurantId);            
+        $meals = MealDB::getMealListForRestaurant($restaurant->getId());
+        $_SESSION['restaurant'] = $restaurant;  
+        $_SESSION['meals'] = $meals;  
+        
+        require_once("restaurant_detail.php");
         break;
     
     default:        

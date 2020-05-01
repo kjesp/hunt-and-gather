@@ -1,7 +1,9 @@
 <?php 
-    session_set_cookie_params(0);
-    session_start();   
-    
+    if(session_id() == ''){
+    $lifetime = 60 * 60 * 24 * 14;    //two weeks
+    session_set_cookie_params($lifetime, '/');
+    session_start();    
+}
 require('model/allergen.php');  
 require('model/database.php');    
 require('model/allergen_db.php');
@@ -18,8 +20,8 @@ require_once 'view/header.php';?>
 
 <h2>Home Page</h2>
     <form action="meal_manager/index.php" method="post">
-    <label>Search by city:</label>
-    <input type="text" name="search">   
+    <label>Search by zip code:</label>
+    <input required type="text" name="search">   
     <br>
     <fieldset class="group"> 
         <legend>Find:</legend> 
@@ -33,13 +35,13 @@ require_once 'view/header.php';?>
     </fieldset> 
     <br>
     <br>
-    <p>address the issues i'm going to run into by listing things like 'dairy' and 'milk' separately...</p>
+    <p>address the issues i'm going to run into by listing things like 'dairy' and 'milk' separately...maybe just that dairy includes milk but not vice versa</p>
     <fieldset class="group"> 
             <legend>Avoid:</legend> 
             <ul class="checkbox">        
                 
                  <?php foreach ($allergensArray as $al) : ?>                
-                    <li><input type="checkbox" name="<?php echo $al->getName(); ?>" value="" />
+                    <li><input type="checkbox" name="allergenChecklist[]" value="<?php echo $al->getName(); ?>"  />
                     <label for=""><?php echo $al->getName(); ?></label></li>                             
                 <?php endforeach; ?>
     </fieldset> 
