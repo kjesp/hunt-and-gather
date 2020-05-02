@@ -2,6 +2,7 @@
 class MealDB{    
         
     public static function add_meal($mealParam){
+        $db= new Database();
         $db = Database::getDB();
         $meal = $mealParam;
         
@@ -22,6 +23,7 @@ class MealDB{
     }  
         
        public static function getMealList(){
+        $db= new Database();
         $db = Database::getDB();
         
         $query = 'SELECT * FROM meal';
@@ -46,6 +48,7 @@ class MealDB{
     }
     
     public static function getMealListForRestaurant($id){
+        $db= new Database();
         $db = Database::getDB();
         
         $query = 'SELECT * FROM meal WHERE restaurant_id = :id';
@@ -71,6 +74,7 @@ class MealDB{
     }
     
     public static function getMealById($id){
+        $db= new Database();
         $db = Database::getDB();
 
     $query = 'SELECT * FROM meal '
@@ -98,6 +102,7 @@ class MealDB{
     }
     
     public static function getSearchResultsByAllergens($allergenIDsList){
+        $db= new Database();
         $db = Database::getDB();
                         
         $query =    'select M.id, M.name, M.restaurant_id, M.is_official, M.date_added
@@ -131,8 +136,82 @@ class MealDB{
             
             $mealObjectArray[] = $mealObject;
         }
-        return $mealObjectArray;
+        return $mealObjectArray;    
+    }
     
+    public static function getSearchResultsByAllergensAndLocation($allergenIDsList, $location){
+        $db= new Database();
+        $db = Database::getDB();        
+                                
+        $query =    '           select M.id, M.name, M.restaurant_id, M.is_official, M.date_added 
+           from meal M join restaurant R on R.id = M.restaurant_id 
+           where M.restaurant_id = any 
+           (select R.id from restaurant R where (city = :location or zip = :location)) 
+            
+           and M.id = any 
+           (select M.id from meal M where M.id not in 
+           (select M.id from meal M where M.id = any 
+           (select A.meal_id from allergenMeal A where allergen_id= 22 or 2)));';
+        
+//                echo $query;
+//        die;
+        
+        $statement = $db->prepare($query);
+        $statement->bindValue(':allergenIDsList', $allergenIDsList);
+        $statement->bindValue(':location', $location);
+        $statement->execute();
+        $records = $statement->fetchAll();
+        $statement->closeCursor();
+        
+        $mealObjectArray = array();
+        
+        foreach ($records as $record) {
+            $mealObject = new Meal(
+                $record['id'],
+                $record['name'],
+                $record['restaurant_id'],
+                $record['is_official'],
+                $record['date_added']);
+            
+            $mealObjectArray[] = $mealObject;
+        }
+      return $mealObjectArray;    
+        
+    }
+    
+    public static function getSearchResultsByLocationOnly($location){
+        $db= new Database();
+        $db = Database::getDB();        
+        
+                        
+        $query =    'select M.id, M.name, M.restaurant_id, M.is_official, M.date_added
+                    from meal M
+                    join restaurant R on R.id = M.restaurant_id
+                    where M.restaurant_id = any
+                            (select R.id
+                            from restaurant R
+                            where city = :location
+                            or zip = :location);';
+        
+        $statement = $db->prepare($query);
+        $statement->bindValue(':location', $location);
+        $statement->execute();
+        $records = $statement->fetchAll();
+        $statement->closeCursor();
+        
+        $mealObjectArray = array();
+        
+        foreach ($records as $record) {
+            $mealObject = new Meal(
+                $record['id'],
+                $record['name'],
+                $record['restaurant_id'],
+                $record['is_official'],
+                $record['date_added']);
+            
+            $mealObjectArray[] = $mealObject;
+        }
+        return $mealObjectArray;    
     }
 }
     

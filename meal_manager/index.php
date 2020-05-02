@@ -51,7 +51,9 @@ switch($controllerChoice) {
        
     case "search":    
         $message = "";  
-        $searchLocation = filter_input(INPUT_POST, 'search');
+        $searchLocation = filter_input(INPUT_POST, 'search');      
+        
+        
         
         
         //if any allergens were selected, put them in an array (string array of names)
@@ -77,25 +79,41 @@ switch($controllerChoice) {
            $trimmedIdListOfAllergens = substr($stringListOfAllergensWithOr, 4);
             
            //use trimmed string to query database and return an array of appropriate meals to display
-            $meals = MealDB::getSearchResultsByAllergens($trimmedIdListOfAllergens);
+            $meals = MealDB::getSearchResultsByAllergensAndLocation($trimmedIdListOfAllergens, $searchLocation);
             
             //foreach meal in meals, get the restuarant id, use the id to retrieve the restaruant f/
             //db, and add the restaurant to restaurants array.
-            $restaurantsArray = array();
+            $restaurants = array();
             foreach($meals as $meal){
-              array_push($restaurantsArray, RestaurantDB::getRestaurantById($meal->getRestaurant_id())); 
+              if(!in_array(RestaurantDB::getRestaurantById($meal->getRestaurant_id()), $restaurants)){
+                     //if the restaurant isn't already in the array, add it
+                     array_push($restaurants, RestaurantDB::getRestaurantById($meal->getRestaurant_id())); 
+                 }  
             }            
-         }
-         
-         else{
-             $message = "No allergens selected. Here is a full list of meals and restaurants:";
-             $meals = MealDB::getMealList();
-             }
-            
-            $_SESSION['message'] = $message;
             $_SESSION['allergensChosen'] = $allergenNameArray;
+         }         
+         else{//if no allergens were chosen, display an appropriate message explaining that, then return a full list of meals and restaurants for 
+             //that location
+             $message = "No allergens selected. Here is a full list of meals and restaurants for your location:";
+             
+             $meals = MealDB::getSearchResultsByLocationOnly($searchLocation);
+             
+             $restaurants = array();
+             foreach($meals as $meal){
+                        if(!in_array(RestaurantDB::getRestaurantById($meal->getRestaurant_id()), $restaurants)){
+                            //if the restaurant isn't already in the array, add it
+                            array_push($restaurants, RestaurantDB::getRestaurantById($meal->getRestaurant_id())); 
+                        }              
+                }  //end foreach
+             $_SESSION['allergensChosen'] = null;
+            } 
+             
+                        
+            
+            $_SESSION['message'] = $message;           
             $_SESSION['meals'] = $meals;
-            $_SESSION['restaurants'] = $restaurantsArray;
+            $_SESSION['restaurants'] = $restaurants;
+            
         require_once('meal_results.php');
         break;
     

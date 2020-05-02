@@ -18,9 +18,9 @@ CREATE TABLE `endUser` (
 CREATE TABLE `restaurant` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT, 
   `name` varChar(100) NOT NULL,
-   `city` varChar(50) NOT NULL,
+  `city` varChar(50) NOT NULL,
   `state` varChar(2) NOT NULL,
-  `zip` varChar(5),
+  `zip` varChar(5) NOT NULL,
   `contact_person_first` varChar(100),
   `contact_person_last` varChar(100),
   `phone` int(10),
@@ -103,25 +103,31 @@ INSERT INTO endUserType VALUES
 (2, 'Administrator');
 
 insert into endUser VALUES
-(1,2, 'admin@st.com', 'pass', 'Detroit', 'MI', 48127, NOW()),
-(2,1, 'aa@st.com', 'pass', 'Duluth', 'MN', 55805, NOW()),
-(3,1, 'bb@st.com', 'pass', 'Milwaukee', 'WI', 53201, NOW()),
-(4,1, 'cc@st.com', 'pass', 'Fort Walton Beach', 'FL', 32547, NOW()),
-(5,1, 'dd@st.com', 'pass', 'St. Paul', 'MN', 55101, NOW());
+(1,2, 'admin@st.com', 'pass', 'Detroit', 'MI', '48127', NOW()),
+(2,1, 'aa@st.com', 'pass', 'Duluth', 'MN', '55805', NOW()),
+(3,1, 'bb@st.com', 'pass', 'Milwaukee', 'WI', '53201', NOW()),
+(4,1, 'cc@st.com', 'pass', 'Fort Walton Beach', 'FL', '32547', NOW()),
+(5,1, 'dd@st.com', 'pass', 'St. Paul', 'MN', '55101', NOW());
 
 insert into restaurant VALUES
-(1,'Dunkin Donuts', 'Duluth', 'MN', 55810, null, null, null, 0, NOW()),
-(2,'Pizza Luce', 'Duluth', 'MN', 55802, null, null, null, 0, NOW()),
-(3,"McDonald's", 'Superior', 'WI', 54880, '', '', null, 0, NOW()),
-(4,'Test Restaurant', 'TestCity', 'WI', null, "Nancy", "Kerrigan", "1112223344", 0, NOW());
+(1,'Dunkin Donuts', 'Duluth', 'MN', '55810', null, null, null, 0, NOW()),
+(2,'Pizza Luce', 'Duluth', 'MN', '55802', null, null, null, 0, NOW()),
+(3,"McDonald's", 'Superior', 'WI', '54880', '', '', null, 0, NOW()),
+(4,'Test Restaurant', 'TestCity', 'WI', '11111', "Nancy", "Kerrigan", "1112223344", 0, NOW());
 
 insert into meal VALUES
-(1,'Dunkin Burrito Bowl', 1, 1, NOW()),
-(2,'Test Meal', 1, 1, NOW()),
-(3,'WholegrainSausage McMuffin with Egg', 3, 1, NOW()),
+-- (1,'Dunkin Burrito Bowl', 1, 1, NOW()),
+(1,'Dunkin has Egg, Soy, Milk', 1, 1, NOW()),
+-- (2,'Test Meal', 1, 1, NOW()),
+(2,'Luce has Chicken', 2, 1, NOW()),
+-- (3,'WholegrainSausage McMuffin with Egg', 3, 1, NOW()),
+(3,'Mcdonalds has Egg, Soy, Milk, Wheat, Pork', 3, 1, NOW()),
+-- (4,'Meal with all Allergens', 4, 1, NOW()),
 (4,'Meal with all Allergens', 4, 1, NOW()),
+-- (5,'Meal with no Allergens', 4, 1, NOW()),
 (5,'Meal with no Allergens', 4, 1, NOW()),
-(6,'Unofficial Meal', 1, 0, NOW());
+-- (6,'Unofficial Meal', 1, 0, NOW());
+(6,'Dunkin Unofficial Meal No Allergens', 1, 0, NOW());
 
 insert into review VALUES
 (1, 1, 1, 1, 'this place does not have anything gluten free', 2, NOW()),
@@ -158,8 +164,8 @@ insert into allergen VALUES
 (26, 'Yeast'),
 (27, 'Rice'),
 (28, 'Balsam of Peru'),
-(29, 'Milk');
-
+(29, 'Milk'),
+(30, 'test');
 insert into allergenMeal VALUES
 (1, 2, 3),
 (2, 29, 3),
@@ -197,7 +203,8 @@ insert into allergenMeal VALUES
 (34, 27, 4), 
 (35, 28, 4), 
 (36, 29, 4), 
-(37, 8, 1);
+(37, 8, 1),
+(38, 22, 2);
 
 insert into endUserAllergen VALUES
 (1, 1, 1),
@@ -206,8 +213,11 @@ insert into endUserAllergen VALUES
 
 insert into mealRestaurant VALUES
 (1, 1, 1),
-(2, 2, 4),
-(3, 3, 3);
+(2, 2, 2),
+(3, 3, 3),
+(4, 4, 4),
+(5, 5, 4),
+(6, 6, 1);
 
 
 

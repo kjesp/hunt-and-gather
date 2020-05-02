@@ -12,11 +12,8 @@ $restaurants = $_SESSION['restaurants'];
 $message = $_SESSION['message'];
 $allergensChosen = $_SESSION['allergensChosen'];
 
-//if($message != ""){
-//    $allergensChosen = $_SESSION['allergensChosen'];
-//}
-
  require_once '../view/header.php'; ?> 
+
 
 
 <h1>Results for Search ( 
@@ -65,7 +62,8 @@ $allergensChosen = $_SESSION['allergensChosen'];
                 <td class="right">
                     <?php 
                     //use restaurant id to return restaurant name  
-                    require_once '../model/restaurant_db.php';         //display name
+                    require_once '../model/restaurant_db.php';         
+                    //display name
                     $restaurantName = RestaurantDB::getNameUsingId($meal->getRestaurant_id());
                             
                     
@@ -119,6 +117,7 @@ $allergensChosen = $_SESSION['allergensChosen'];
             <th>Name</th>
             <th>City</th>
             <th>State</th>
+            <th>Zip</th>
             <th></th>
         </tr>
                 
@@ -133,6 +132,7 @@ $allergensChosen = $_SESSION['allergensChosen'];
                 <td class="right"><?php echo $restaurant->getName(); ?></td>
                 <td class="right"><?php echo $restaurant->getCity(); ?></td>
                 <td class="right"><?php echo $restaurant->getState(); ?></td>
+                <td class="right"><?php echo $restaurant->getZip(); ?></td>
                 
                 <td><form action="restaurant_manager/index.php" method="post">
                         <input type="hidden" name="restaurant_id"

@@ -7,7 +7,6 @@
 require('model/allergen.php');  
 require('model/database.php');    
 require('model/allergen_db.php');
-
     
 $allergensArray = AllergenDB::getAllergenList();
 
@@ -20,7 +19,7 @@ require_once 'view/header.php';?>
 
 <h2>Home Page</h2>
     <form action="meal_manager/index.php" method="post">
-    <label>Search by zip code:</label>
+    <label>Search by city or zip:</label>
     <input required type="text" name="search">   
     <br>
     <fieldset class="group"> 
