@@ -51,8 +51,7 @@ switch($controllerChoice) {
        
     case "search":    
         $message = "";  
-        $searchLocation = filter_input(INPUT_POST, 'search');      
-        
+        $searchLocation = filter_input(INPUT_POST, 'search');             
         
         
         
@@ -68,20 +67,18 @@ switch($controllerChoice) {
             }
             
             //loop through name id array and add to string for select query
-             $stringListOfAllergensWithOr = "";
+             $stringListOfAllergensWithComma = "";
              foreach($allergenIDArray as $allergenID){
-                $stringListOfAllergensWithOr = $stringListOfAllergensWithOr." or ".$allergenID;
-                //$mealID = MealDB::getSearchResultsByAllergens($allergenName);
-//                array_push($mealIdArray, MealDB::getSearchResultsByAllergens($allergenName));
+                $stringListOfAllergensWithComma = $stringListOfAllergensWithComma.",".$allergenID;
             }
             
-           //trim query so it dosn't have an empty ' or ' at the beginning 
-           $trimmedIdListOfAllergens = substr($stringListOfAllergensWithOr, 4);
+           //trim query so it dosn't have a comma at the beginning 
+           $trimmedIdListOfAllergens = substr($stringListOfAllergensWithComma, 1);
             
            //use trimmed string to query database and return an array of appropriate meals to display
             $meals = MealDB::getSearchResultsByAllergensAndLocation($trimmedIdListOfAllergens, $searchLocation);
             
-            //foreach meal in meals, get the restuarant id, use the id to retrieve the restaruant f/
+            //foreach meal in the resulting array, get the restuarant id, use the id to retrieve the restaruant f/
             //db, and add the restaurant to restaurants array.
             $restaurants = array();
             foreach($meals as $meal){
@@ -106,13 +103,12 @@ switch($controllerChoice) {
                         }              
                 }  //end foreach
              $_SESSION['allergensChosen'] = null;
-            } 
-             
-                        
+            }                                     
             
             $_SESSION['message'] = $message;           
             $_SESSION['meals'] = $meals;
             $_SESSION['restaurants'] = $restaurants;
+            $_SESSION['listOfAllergensWithCommas'] = $stringListOfAllergensWithComma;
             
         require_once('meal_results.php');
         break;
@@ -164,7 +160,7 @@ switch($controllerChoice) {
     
     
     case "redirect_meal_to_restaurant_add_form";
-        /*in this case, the user added meal info, but couldn't find t
+        /*in this case, the user added meal info, but couldn't find the
          * restaurant in the drop-down. This method saves all the necessary meal data to the session,
         then redirects to the restaurant add form. All the DB inserts will
         take place in restaurant_manager/indexp.php     */
@@ -192,8 +188,8 @@ switch($controllerChoice) {
         $isOfficial = false;
         
         //capitalize the words in the name if they aren't already
-        $lowerCaseMealName = strtolower($mealName);
-        $firstLettersCapitalMealName = ucwords($lowerCaseMealName);        
+        $lowerCaseMealName = strtolower($mealName); //first lower case
+        $firstLettersCapitalMealName = ucwords($lowerCaseMealName);  //then capitalize the first letters    
         
         //create meal object for saving to session
         $meal = new Meal($id, $firstLettersCapitalMealName, $restaurantId, $isOfficial, null);        

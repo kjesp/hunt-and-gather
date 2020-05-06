@@ -139,26 +139,28 @@ class MealDB{
         return $mealObjectArray;    
     }
     
-    public static function getSearchResultsByAllergensAndLocation($allergenIDsList, $location){
+    public static function getSearchResultsByAllergensAndLocation($allergenIDsList, $locationn){
         $db= new Database();
-        $db = Database::getDB();        
-                                
-        $query =    '           select M.id, M.name, M.restaurant_id, M.is_official, M.date_added 
-           from meal M join restaurant R on R.id = M.restaurant_id 
-           where M.restaurant_id = any 
-           (select R.id from restaurant R where (city = :location or zip = :location)) 
-            
-           and M.id = any 
-           (select M.id from meal M where M.id not in 
-           (select M.id from meal M where M.id = any 
-           (select A.meal_id from allergenMeal A where allergen_id= 22 or 2)));';
-        
+        $db = Database::getDB();
+       
 //                echo $query;
+//                echo $allergenIDsList;
+//                echo $location;
 //        die;
+       
+         //$allergenIDsList  = '2, 22';
+$query = 
+ 'select M.id, M.name, M.restaurant_id, M.is_official, M.date_added
+        from meal M
+        join restaurant R on M.restaurant_id  = r.id
+        left join allergenmeal AM on M.id = AM.meal_id
+        left join allergen A on am.allergen_id = A.id   
+        where (R.city = "Duluth" or  R.zip = "11111")
+        and m.id not in
+            (select meal_id from allergenmeal where allergen_id in ('.$allergenIDsList.'))';
+
         
         $statement = $db->prepare($query);
-        $statement->bindValue(':allergenIDsList', $allergenIDsList);
-        $statement->bindValue(':location', $location);
         $statement->execute();
         $records = $statement->fetchAll();
         $statement->closeCursor();
@@ -214,4 +216,5 @@ class MealDB{
         return $mealObjectArray;    
     }
 }
-    
+
+
