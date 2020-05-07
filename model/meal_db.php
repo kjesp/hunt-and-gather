@@ -139,7 +139,7 @@ class MealDB{
         return $mealObjectArray;    
     }
     
-    public static function getSearchResultsByAllergensAndLocation($allergenIDsList, $locationn){
+    public static function getSearchResultsByAllergensAndLocation($allergenIDsList, $location){
         $db= new Database();
         $db = Database::getDB();
        
@@ -147,17 +147,38 @@ class MealDB{
 //                echo $allergenIDsList;
 //                echo $location;
 //        die;
-       
-         //$allergenIDsList  = '2, 22';
+//$query = 
+// 'select M.id, M.name, M.restaurant_id, M.is_official, M.date_added
+//        from meal M
+//        join restaurant R on M.restaurant_id  = r.id
+//        left join allergenmeal AM on M.id = AM.meal_id
+//        left join allergen A on am.allergen_id = A.id   
+//        where (R.city = "Duluth" or  R.zip = "11111")
+//        and m.id not in
+//            (select meal_id from allergenmeal where allergen_id in ('.$allergenIDsList.'))';
+
+//i went back to this query because it doesn't return repeats
 $query = 
- 'select M.id, M.name, M.restaurant_id, M.is_official, M.date_added
-        from meal M
-        join restaurant R on M.restaurant_id  = r.id
-        left join allergenmeal AM on M.id = AM.meal_id
-        left join allergen A on am.allergen_id = A.id   
-        where (R.city = "Duluth" or  R.zip = "11111")
-        and m.id not in
-            (select meal_id from allergenmeal where allergen_id in ('.$allergenIDsList.'))';
+        'select M.id, M.name, M.restaurant_id, M.is_official, M.date_added
+                    from meal M
+                    left join review on review.meal_id = M.id
+                    join restaurant R on R.id = M.restaurant_id                    
+                    where M.restaurant_id = any
+                            (select R.id
+                            from restaurant R
+                            where (R.city = "'.$location.'"
+                            or R.zip = "'.$location.'"))            
+                            and M.id = any
+                                    (select M.id
+                                     from meal M
+                                     where M.id not in
+                                            (select M.id
+                                             from meal M
+                                             where M.id = any
+                                                    (select A.meal_id
+                                                      from allergenMeal A
+                                                        where allergen_id in ('.$allergenIDsList.'))))
+                                                        order by review.rating;';
 
         
         $statement = $db->prepare($query);

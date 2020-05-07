@@ -14,6 +14,12 @@ $allergensChosen = $_SESSION['allergensChosen'];
 
  require_once '../view/header.php'; ?> 
 
+<form action="meal_manager/index.php" method="post">
+    <label>Search a different location:</label>
+    <input placeholder="City or Zip" required type="text" name="search">   
+    <input type="submit" value="Search" class="button"><br>            
+    <input type="hidden" name="controllerRequest" value="searchNewLocation"> 
+</form>
 
 
 <h1>Results for Search ( 
@@ -30,6 +36,7 @@ $allergensChosen = $_SESSION['allergensChosen'];
     <?php echo substr_replace($stringListOfAllergensChosen ,"",-2) ?>
 <?php endif; ?>   
 )</h1>
+
     
 <input type="text" name=zip_or_city_label">
 <select name="sort">

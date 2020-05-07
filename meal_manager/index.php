@@ -48,13 +48,46 @@ else if(isset($_POST["redirect_meal_to_restaurant_add_form"])){
 }
 
 switch($controllerChoice) {
+    
+    case "searchNewLocation":
+        $message = "";  
+        $searchLocation = filter_input(INPUT_POST, 'search');          
+        $allergenIDArray =  $_SESSION['allergenIDArray'];
+        
+        //The following, until the break, is repeated code. In the future, abstract this
+        //loop through name id array and add to string for select query
+             $stringListOfAllergensWithComma = "";
+             foreach($allergenIDArray as $allergenID){
+                $stringListOfAllergensWithComma = $stringListOfAllergensWithComma.",".$allergenID;
+            }
+            
+           //trim query so it dosn't have a comma at the beginning 
+           $trimmedIdListOfAllergens = substr($stringListOfAllergensWithComma, 1);
+            
+           //use trimmed string to query database and return an array of appropriate meals to display
+            $meals = MealDB::getSearchResultsByAllergensAndLocation($trimmedIdListOfAllergens, $searchLocation);
+            
+            //foreach meal in the resulting array, get the restuarant id, use the id to retrieve the restaruant f/
+            //db, and add the restaurant to restaurants array.
+            $restaurants = array();
+            foreach($meals as $meal){
+              if(!in_array(RestaurantDB::getRestaurantById($meal->getRestaurant_id()), $restaurants)){
+                     //if the restaurant isn't already in the array, add it
+                     array_push($restaurants, RestaurantDB::getRestaurantById($meal->getRestaurant_id())); 
+                 }  
+            }            
+            $_SESSION['message'] = $message;           
+            $_SESSION['meals'] = $meals;
+            $_SESSION['restaurants'] = $restaurants;
+            
+        require_once('meal_results.php');
+        
+        break;
        
     case "search":    
         $message = "";  
         $searchLocation = filter_input(INPUT_POST, 'search');             
-        
-        
-        
+                        
         //if any allergens were selected, put them in an array (string array of names)
          if(isset($_POST['allergenChecklist'])) {
             $allergenNameArray = $_POST['allergenChecklist']; 
@@ -109,6 +142,7 @@ switch($controllerChoice) {
             $_SESSION['meals'] = $meals;
             $_SESSION['restaurants'] = $restaurants;
             $_SESSION['listOfAllergensWithCommas'] = $stringListOfAllergensWithComma;
+            $_SESSION['allergenIDArray'] = $allergenIDArray;
             
         require_once('meal_results.php');
         break;

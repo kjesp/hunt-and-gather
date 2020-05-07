@@ -19,8 +19,8 @@ require_once 'view/header.php';?>
 
 <h2>Home Page</h2>
     <form action="meal_manager/index.php" method="post">
-    <label>Search by city or zip:</label>
-    <input required type="text" name="search">   
+    <label>Search by location:</label>
+    <input placeholder="City or Zip" required type="text" name="search">   
     <br>
     <fieldset class="group"> 
         <legend>Find:</legend> 
