@@ -1,11 +1,13 @@
-ul{
-    list-style-type: none; 
+
+.navbar-brand img
+{
+    display: flex;
+  vertical-align: middle;
+  align-items: center;
+    
 }
 
-p{
-    color: red;
-}
 
-footer p{
-    color: black;
+.green{
+    background-color: #0ce8aa;
 }

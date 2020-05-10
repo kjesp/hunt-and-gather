@@ -146,7 +146,7 @@ insert into allergen VALUES
 (8, 'Soy'),
 (9, 'Corn'),
 (10, 'Wheat'),
-(11, 'Fluten'),
+(11, 'Gluten'),
 (12, 'Fish'),
 (13, 'Gelatin'),
 (14, 'Sesame'),

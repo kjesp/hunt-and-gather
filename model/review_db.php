@@ -7,16 +7,20 @@ class ReviewDB{
         $review = $reviewParam;
         
         $query = 'INSERT INTO review
-            (end_user_id, restaurant_id, meal_id)
+            (endUser_id, restaurant_id, meal_id, comment, rating)
                   VALUES
                         (:end_user_id,
                         :restaurant_id, 
-                        :meal_id)';
+                        :meal_id,
+                        :comment,
+                        :rating)';
         
         $statement = $db->prepare($query);
         $statement->bindValue(':end_user_id', $review->getEnd_user_id());
         $statement->bindValue(':restaurant_id', $review->getRestaurant_id());
         $statement->bindValue(':meal_id', $review->getMeal_id());
+        $statement->bindValue(':comment', $review->getComment());
+        $statement->bindValue(':rating', $review->getRating());
         $statement->execute();
         $statement->closeCursor();
     }

@@ -11,6 +11,7 @@ $meals = $_SESSION['meals'];
 $restaurants = $_SESSION['restaurants'];
 $message = $_SESSION['message'];
 $allergensChosen = $_SESSION['allergensChosen'];
+$findChosen = $_SESSION['findChosen'];
 
  require_once '../view/header.php'; ?> 
 
@@ -22,10 +23,12 @@ $allergensChosen = $_SESSION['allergensChosen'];
 </form>
 
 
-<h1>Results for Search ( 
+<h1>Results for Search 
+    
+    ( Avoid:  
     <!-- if message is not blank, display it. (no allergens were selected)-->
         <?php  $stringListOfAllergensChosen = "";
-        if($message != ""): ?>
+        if($allergensChosen == null): ?>
             <?php echo $message ?>
     <?php else: ?>    
     <!--if the message is blank, then allergens were selected. the following code displays them with
@@ -35,7 +38,21 @@ $allergensChosen = $_SESSION['allergensChosen'];
     <?php endforeach; ?> 
     <?php echo substr_replace($stringListOfAllergensChosen ,"",-2) ?>
 <?php endif; ?>   
-)</h1>
+    
+    
+    
+ | Find: 
+ <?php  $stringListOfFindChosen = "";
+        if($findChosen == null): ?>
+            <?php echo $message ?>
+    <?php else: ?>    
+    <!--if the message is blank, then allergens were selected. the following code displays them with
+        commas following, except for the final one which has no comma -->   
+        <?php foreach($findChosen as $f) : ?>
+         <?php $stringListOfFindChosen = $stringListOfFindChosen.$f.", "; ?>         
+    <?php endforeach; ?> 
+    <?php echo substr_replace($stringListOfFindChosen ,"",-2) ?>
+<?php endif; ?> )</h1>
 
     
 <input type="text" name=zip_or_city_label">
@@ -51,7 +68,9 @@ $allergensChosen = $_SESSION['allergensChosen'];
     <option>Restaurants</option>
 </select>
 
-    <table class="mealTable">
+<h2>Meals</h2>
+
+    <table class="table">
         <tr>
             <th>ID</th>
             <th>Name</th>
@@ -118,7 +137,7 @@ $allergensChosen = $_SESSION['allergensChosen'];
 <br>
 <h2>Restaurants</h2>
 
-<table>
+<table class="table">
         <tr>
             <th>ID</th>
             <th>Name</th>

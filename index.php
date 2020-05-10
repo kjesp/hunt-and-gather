@@ -9,43 +9,55 @@ require('model/database.php');
 require('model/allergen_db.php');
     
 $allergensArray = AllergenDB::getAllergenList();
+$findArray = array(
+    'Gluten Free',
+    'Vegetarian',
+    'Vegan'    
+);
 
 require_once 'view/header.php';?>  
 
-<p>commented out here - user name should appear when logged in</p>
+<div class="container-fluid">
+    
 <!--  <p><?php echo $userID; ?></p>-->
 
 <h1>Hunt | Gather</h1>
 
-<h2>Home Page</h2>
     <form action="meal_manager/index.php" method="post">
     <label>Search by location:</label>
     <input placeholder="City or Zip" required type="text" name="search">   
-    <br>
-    <fieldset class="group"> 
-        <legend>Find:</legend> 
-            <ul class="checkbox"> 
-                <li><input type="checkbox" id="gf" value="Gluten Free" /><label for="gf">Gluten Free</label></li>
-                <li><input type="checkbox" id="vegetarian" value="Vegetarian" /><label for="vegetarian">Vegetarian</label></li>
-                <li><input type="checkbox" id="local" value="Local" /><label for="local">Local</label></li>
-                <li><input type="checkbox" id="vegan" value="Vegan" /><label for="vegan">Vegan</label></li>
-                <li><input type="checkbox" id="raw" value="Raw" /><label for="raw">Raw</label></li>
-            </ul> 
-    </fieldset> 
-    <br>
-    <br>
-    <p>address the issues i'm going to run into by listing things like 'dairy' and 'milk' separately...maybe just that dairy includes milk but not vice versa</p>
-    <fieldset class="group"> 
-            <legend>Avoid:</legend> 
-            <ul class="checkbox">        
-                
-                 <?php foreach ($allergensArray as $al) : ?>                
-                    <li><input type="checkbox" name="allergenChecklist[]" value="<?php echo $al->getName(); ?>"  />
-                    <label for=""><?php echo $al->getName(); ?></label></li>                             
-                <?php endforeach; ?>
-    </fieldset> 
-  
+    <br><br>
     
+    <div class="container-fluid">
+          <div class="row">
+                <div class="col-6 col-md-4">
+                    
+                    <fieldset class="group"> 
+                         <legend>Find:</legend> 
+                         <ul class="checkbox">        
+
+                              <?php foreach ($findArray as $find) : ?>                
+                                 <li><input type="checkbox" name="findChecklist[]" value="<?php echo $find; ?>"  />
+                                 <label for=""><?php echo $find; ?></label></li>                             
+                             <?php endforeach; ?>
+                    </fieldset> 
+                </div>
+              
+                <div class="col-6">
+                    <fieldset class="group"> 
+                            <legend>Avoid:</legend> 
+                            <ul class="checkbox">        
+
+                                 <?php foreach ($allergensArray as $al) : ?>                
+                                    <li><input type="checkbox" name="allergenChecklist[]" value="<?php echo $al->getName(); ?>"  />
+                                    <label for=""><?php echo $al->getName(); ?></label></li>                             
+                                <?php endforeach; ?>
+                    </fieldset> 
+    
+                </div>
+          </div>
+    </div>
+              
     <br>
     <input type="submit" value="Search" class="button"><br>            
     <input type="hidden" name="controllerRequest" value="search">     
@@ -60,7 +72,7 @@ require_once 'view/header.php';?>
 
     <?php require_once 'view/footer.php';?> 
    
-
+</div>
 
 
 
