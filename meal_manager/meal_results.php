@@ -28,7 +28,7 @@ $findChosen = $_SESSION['findChosen'];
     ( Avoid:  
     <!-- if message is not blank, display it. (no allergens were selected)-->
         <?php  $stringListOfAllergensChosen = "";
-        if($allergensChosen == null): ?>
+        if($allergensChosen == null || $allergensChosen == ""): ?>
             <?php echo $message ?>
     <?php else: ?>    
     <!--if the message is blank, then allergens were selected. the following code displays them with
@@ -43,7 +43,7 @@ $findChosen = $_SESSION['findChosen'];
     
  | Find: 
  <?php  $stringListOfFindChosen = "";
-        if($findChosen == null): ?>
+        if($findChosen == null || $findChosen == ""): ?>
             <?php echo $message ?>
     <?php else: ?>    
     <!--if the message is blank, then allergens were selected. the following code displays them with

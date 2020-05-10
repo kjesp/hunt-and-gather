@@ -153,11 +153,14 @@ class MealDB{
 //        join restaurant R on M.restaurant_id  = r.id
 //        left join allergenmeal AM on M.id = AM.meal_id
 //        left join allergen A on am.allergen_id = A.id   
-//        where (R.city = "Duluth" or  R.zip = "11111")
+//        left join review REV on REV.meal_id = M.id
+//        where (R.city = "'.$location.'"
+//                            or R.zip = "'.$location.'")
 //        and m.id not in
-//            (select meal_id from allergenmeal where allergen_id in ('.$allergenIDsList.'))';
+//            (select meal_id from allergenmeal where allergen_id in ('.$allergenIDsList.'));';
 
-//i went back to this query because it doesn't return repeats
+//i went back to this query because it didn't return repeats, then I startead on the front end, and
+        //when I retested, it was returning repeats. So who knows.
 $query = 
         'select M.id, M.name, M.restaurant_id, M.is_official, M.date_added
                     from meal M
@@ -178,7 +181,7 @@ $query =
                                                     (select A.meal_id
                                                       from allergenMeal A
                                                         where allergen_id in ('.$allergenIDsList.'))))
-                                                        order by review.rating;';
+                    order by review.rating;';
 
         
         $statement = $db->prepare($query);

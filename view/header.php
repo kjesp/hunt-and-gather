@@ -18,12 +18,17 @@
                               <?php   
                     $_SESSION['allergensChosen'] = "";
                     $_SESSION['findChosen'] = "";
+                    $_SESSION['meals'] = "";
+                    $_SESSION['restaurants'] = "";
+                    $_SESSION['message'] = "";
+                    $_SESSION['allergenIDArray'] = "";
                     ?>>
                     </a>
                  </li>
                 <li class="nav-item"><a class="nav-link" href="user_manager/?controllerRequest=user_show_login_form">Log In</a></li>
                 <li class="nav-item"><a class="nav-link" href="user_manager/?controllerRequest=user_show_register_form">Register</a></li>
                 <li class="nav-item"><a class="nav-link" href="user_manager/?controllerRequest=log_out">Log Out</a></li>
+                
             </ul>
       </div>
     </nav>

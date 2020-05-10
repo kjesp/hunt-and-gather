@@ -17,62 +17,73 @@ $findArray = array(
 
 require_once 'view/header.php';?>  
 
-<div class="container-fluid">
+<div class="d-flex flex-column justify-content-around">
     
 <!--  <p><?php echo $userID; ?></p>-->
-
-<h1>Hunt | Gather</h1>
-
-    <form action="meal_manager/index.php" method="post">
-    <label>Search by location:</label>
-    <input placeholder="City or Zip" required type="text" name="search">   
-    <br><br>
     
-    <div class="container-fluid">
-          <div class="row">
-                <div class="col-6 col-md-4">
-                    
-                    <fieldset class="group"> 
-                         <legend>Find:</legend> 
-                         <ul class="checkbox">        
-
-                              <?php foreach ($findArray as $find) : ?>                
-                                 <li><input type="checkbox" name="findChecklist[]" value="<?php echo $find; ?>"  />
-                                 <label for=""><?php echo $find; ?></label></li>                             
-                             <?php endforeach; ?>
-                    </fieldset> 
-                </div>
-              
-                <div class="col-6">
-                    <fieldset class="group"> 
-                            <legend>Avoid:</legend> 
-                            <ul class="checkbox">        
-
-                                 <?php foreach ($allergensArray as $al) : ?>                
-                                    <li><input type="checkbox" name="allergenChecklist[]" value="<?php echo $al->getName(); ?>"  />
-                                    <label for=""><?php echo $al->getName(); ?></label></li>                             
-                                <?php endforeach; ?>
-                    </fieldset> 
-    
-                </div>
-          </div>
+       <!--row-->
+    <div class="p-2">
+        <h1>Hunt | Gather</h1>
     </div>
-              
-    <br>
-    <input type="submit" value="Search" class="button"><br>            
-    <input type="hidden" name="controllerRequest" value="search">     
-</form>
+       
+          <!--row-->
+    <div class="p-2">
+        <form action="meal_manager/index.php" method="post">
+        <label>Search by location:</label>
+        <input placeholder="City or Zip" required type="text" name="search">               
+    </div>
+
+           
+   <!--row-->
+    <div class="p-2">
+        <div class="d-flex justify-content-around flex-row">
+            <div class="p-2">
+                          <fieldset> 
+                               <legend>Find:</legend> 
+                               <ul class="checkbox list-unstyled">    
+                                    <?php foreach ($findArray as $find) : ?>                
+                                       <li><input type="checkbox" name="findChecklist[]" value="<?php echo $find; ?>"  />
+                                       <label for=""><?php echo $find; ?></label></li>                             
+                                   <?php endforeach; ?>
+                               </ul>
+                          </fieldset> 
+            </div>
+                      
+            <div class="p-2">             
+                          <fieldset> 
+                                  <legend>Avoid:</legend> 
+                                  <ul class="checkbox list-unstyled">
+                                       <?php foreach ($allergensArray as $al) : ?>                
+                                          <li><input type="checkbox" name="allergenChecklist[]" value="<?php echo $al->getName(); ?>"  />
+                                          <label for=""><?php echo $al->getName(); ?></label></li>                             
+                                      <?php endforeach; ?>
+                                          </ul>
+                          </fieldset> 
+            </div>
+        </div>
+    </div>
+                          
+<!--row-->
+    <div class="p-2">
+        <input type="submit" value="Search" class="button"><br>            
+        <input type="hidden" name="controllerRequest" value="search">     
+    </form>
+    </div>
 
 
-<form action="meal_manager/index.php" method="post">
-    <h3>Don't see the food you're looking for?</h3>
-    <input type="submit" value="Add a Search Category" class="button">
-    <input type="hidden" name="controllerRequest" value="addSearchCategory">  
-</form>
+    <!--row-->
+    <div class="p-2">
+        <form action="meal_manager/index.php" method="post">
+            <h3>Don't see the food you're looking for?</h3>
+            <input type="submit" value="Add a Search Category" class="button">
+            <input type="hidden" name="controllerRequest" value="addSearchCategory">  
+        </form>
+    </div>
 
-    <?php require_once 'view/footer.php';?> 
-   
+
+    <!--row-->
+    <div class="p-2">
+            <?php require_once 'view/footer.php';?> 
+    </div>   
 </div>
-
-
 

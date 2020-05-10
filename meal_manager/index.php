@@ -70,9 +70,9 @@ switch($controllerChoice) {
         $ratingsArray = ReviewDB::getMealRatings($mealId);
         
         $avgRating = null;
-        //get average of ratings
+        //get average of ratings, rounded to one decimal place
         if(count($ratingsArray) > 0){
-            $avgRating = array_sum($ratingsArray) / count($ratingsArray);
+            $avgRating = round((float)array_sum($ratingsArray) / count($ratingsArray), 1);
         }        
         
         //get reviews for meal, ordered by newest to oldest
@@ -99,10 +99,20 @@ switch($controllerChoice) {
         $review = new Review($id, $endUserId, $restaurantId, $mealId, $comment, $rating, null);
         ReviewDB::add_Review($review);
         
+        //get array of all ratings of meal
+        $ratingsArray = ReviewDB::getMealRatings($mealId);
+        
+        $avgRating = null;
+        //get average of ratings, rounded to one decimal place
+        if(count($ratingsArray) > 0){
+            $avgRating = round((float)array_sum($ratingsArray) / count($ratingsArray), 1);
+        }  
+        
         //get updated list of reviews
         $reviewsArray = ReviewDB::getMealReviews($mealId);
         
         $_SESSION['reviewsForMeal'] = $reviewsArray;
+        $_SESSION['averageRating'] = $avgRating;
     
         require_once("meal_detail.php");
         break;
@@ -254,12 +264,29 @@ function getStringListOfAllergensWithCommasForDisplay($allergenIDArray){
 
 function getAndSetInSessionMealsAndRestuaraunts($allergenIDArray, $searchLocation){
     $message = ""; 
+    
+    if($allergenIDArray != null){
+        
+    
+    
+    
     $stringListOfAllergensWithComma = getStringListOfAllergensWithCommasForDisplay($allergenIDArray);
         //trim the string for use in SQL query
         $trimmedIdListOfAllergens = getTrimmedIdListAllergens($stringListOfAllergensWithComma);
 
        //use trimmed string to query database and return an array of appropriate meals to display
-        $meals = MealDB::getSearchResultsByAllergensAndLocation($trimmedIdListOfAllergens, $searchLocation);
+        $mealsWithRepeats = MealDB::getSearchResultsByAllergensAndLocation($trimmedIdListOfAllergens, $searchLocation);
+        
+        //get the unique meals from the array so there are no repeat listings to display
+        $meals = array();
+        foreach($mealsWithRepeats as $meal){
+        if(!in_array($meal, $meals)){
+                     //if the restaurant isn't already in the array, add it
+                     array_push($meals, $meal); 
+                 }  
+        }  
+        
+        
         
         $restaurants = array();
             foreach($meals as $meal){
@@ -267,7 +294,23 @@ function getAndSetInSessionMealsAndRestuaraunts($allergenIDArray, $searchLocatio
                      //if the restaurant isn't already in the array, add it
                      array_push($restaurants, RestaurantDB::getRestaurantById($meal->getRestaurant_id())); 
                  }  
-            }            
+            }  
+    }
+else{
+    $message = "No allergens selected. Here is a full list of meals and restaurants for your location:";
+             
+             $meals = MealDB::getSearchResultsByLocationOnly($searchLocation);
+             
+             $restaurants = array();
+             foreach($meals as $meal){
+                        if(!in_array(RestaurantDB::getRestaurantById($meal->getRestaurant_id()), $restaurants)){
+                            //if the restaurant isn't already in the array, add it
+                            array_push($restaurants, RestaurantDB::getRestaurantById($meal->getRestaurant_id())); 
+                        }              
+                }  //end foreach
+    
+}
+
             $_SESSION['message'] = $message;           
             $_SESSION['meals'] = $meals;
             $_SESSION['restaurants'] = $restaurants;
