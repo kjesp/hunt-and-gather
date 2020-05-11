@@ -40,7 +40,7 @@ if($controllerChoice == NULL){
 switch($controllerChoice) {
        
     case "submit_add_meal_and_restaurant":
-        /*user has previously entered meal info, which is stored in session
+        /*user has previously entered meal info, which is stored in session.
         this method retrieves that info and makes inserts to meal, restaurant, 
         allergenMeal and mealRestaurant tables*/
         $meal = new Meal(0, $_SESSION['meal']->getName(), null, false, null);         
@@ -68,7 +68,7 @@ switch($controllerChoice) {
         //capitalize the words in the state, city if they aren't already
         $upperCaseState = strtoupper($state);         
 
-    //look for duplicate: if $name AND $city AND $state match db entry, return restaurant
+    //look for duplicate: if $name AND $city AND $state match db entry, returns restaurant
         $duplicateRestaurantID = RestaurantDB::searchForDuplicate($firstLettersCapitalRestName, $firstLettersCapitalCity, $upperCaseState );
         
         

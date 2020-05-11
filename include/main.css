@@ -1,13 +1,3 @@
-
-.navbar-brand img
-{
-    display: flex;
-  vertical-align: middle;
-  align-items: center;
-    
-}
-
-
-.green{
+.btn-green{
     background-color: #0ce8aa;
 }

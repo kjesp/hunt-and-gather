@@ -23,16 +23,15 @@ $findChosen = $_SESSION['findChosen'];
 </form>
 
 
-<h1>Results for Search 
-    
-    ( Avoid:  
+<h1>Results for Search (
+     
     <!-- if message is not blank, display it. (no allergens were selected)-->
         <?php  $stringListOfAllergensChosen = "";
         if($allergensChosen == null || $allergensChosen == ""): ?>
-            <?php echo $message ?>
     <?php else: ?>    
     <!--if the message is blank, then allergens were selected. the following code displays them with
         commas following, except for the final one which has no comma -->   
+    <?php echo "Avoid:" ?>
         <?php foreach($allergensChosen as $a) : ?>
          <?php $stringListOfAllergensChosen = $stringListOfAllergensChosen.$a.", "; ?>         
     <?php endforeach; ?> 
@@ -41,33 +40,25 @@ $findChosen = $_SESSION['findChosen'];
     
     
     
- | Find: 
+ 
  <?php  $stringListOfFindChosen = "";
         if($findChosen == null || $findChosen == ""): ?>
-            <?php echo $message ?>
     <?php else: ?>    
     <!--if the message is blank, then allergens were selected. the following code displays them with
-        commas following, except for the final one which has no comma -->   
+        commas following, except for the final one which has no comma -->  
+    <?php echo " | Find:" ?>
         <?php foreach($findChosen as $f) : ?>
          <?php $stringListOfFindChosen = $stringListOfFindChosen.$f.", "; ?>         
     <?php endforeach; ?> 
     <?php echo substr_replace($stringListOfFindChosen ,"",-2) ?>
 <?php endif; ?> )</h1>
-
     
-<input type="text" name=zip_or_city_label">
-<select name="sort">
-    <option>Sort</option>
-    <option>Distance</option>
-    <option>Rating</option>
-</select>
-
-<p>this dropdown doesn't do anything yet. Javascript instead??</p>
-<select name="view">
+<select id="view_meal_or_rest" name="view">
     <option>Meals</option>
     <option>Restaurants</option>
 </select>
 
+<div id="meal_div">
 <h2>Meals</h2>
 
     <table class="table">
@@ -125,16 +116,17 @@ $findChosen = $_SESSION['findChosen'];
                                value="<?php echo $meal->getId(); ?>">
                         <input type="hidden" name="controllerRequest" 
                 value="get_meal_details">
-                        <input type="submit" value="Details">                        
+                        <input class="btn btn-green" type="submit" value="Details">                        
                     </form></td>
                            
             </tr>
             <?php endforeach; ?>
     
     </table>
+</div>
 
 
-<br>
+<div id="rest_div">
 <h2>Restaurants</h2>
 
 <table class="table">
@@ -165,27 +157,18 @@ $findChosen = $_SESSION['findChosen'];
                                value="<?php echo $restaurant->getId(); ?>">
                         <input type="hidden" name="controllerRequest" 
                 value="get_meals_for_restaurant_by_id">
-                        <input type="submit" value="See Meals">                        
+                        <input class="btn btn-green" type="submit" value="See Meals">                        
                     </form></td>
                            
             </tr>
             <?php endforeach; ?>
     
     </table>
+</div>
 
 <h3>Know something we don't? Help other users, and add it!</h3>
 
-<a href="./meal_manager/meal_add_form.php">Add a Meal</a> 
-<br>
-<hr>
-
-<a href="./meal_manager/meal_detail.php">Sample Meal</a>
-<a href="./restaurant_manager/restaurant_detail.php">Sample Restaurant</a>
-
-
-   
-
-
-   
+<a class="btn btn-green" href="./meal_manager/meal_add_form.php">Add a Meal</a> 
+<br>  
     
     <?php require_once '../view/footer.php';?> 

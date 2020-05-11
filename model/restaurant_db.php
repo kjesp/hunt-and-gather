@@ -117,7 +117,7 @@ class RestaurantDB{
         $db= new Database();
         $db= Database::getDB(); 
            
-       $query = 'SELECT name, city, state from restaurant
+       $query = 'SELECT name, city, state, id from restaurant
                WHERE name = :name
                and city = :city
                and state = :state';

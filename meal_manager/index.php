@@ -50,13 +50,43 @@ else if(isset($_POST["redirect_meal_to_restaurant_add_form"])){
 
 switch($controllerChoice) {
     
-    case "addSearchCategory":
-        require_once("../allergen_manager/allergen_add_form.php");
+    case "add_meal_only":
+        $selectedAllergens = array();
+            if(!empty($_POST['check_list'])){
+            // Loop to store and display values of individual checked checkbox.
+                foreach($_POST['check_list'] as $selected){                    
+                    $selectedAllergens[]= $selected;
+                }
+            }            
+                
+        //info for review table
+        $rating = filter_input(INPUT_POST, 'rating');
+        $review = filter_input(INPUT_POST, 'review');
+        
+        //info for meal table
+        $id=0;        
+        $mealName = filter_input(INPUT_POST, 'meal_name');
+        $restaurantId = null;
+        $isOfficial = false;
+        
+        //capitalize the words in the name if they aren't already
+        $lowerCaseMealName = strtolower($mealName); //first lower case
+        $firstLettersCapitalMealName = ucwords($lowerCaseMealName);  //then capitalize the first letters    
+        
+        //create meal object for saving to session
+        $meal = new Meal($id, $firstLettersCapitalMealName, $restaurantId, $isOfficial, null);      
+               
+        $_SESSION['meal'] = $meal;
+        $_SESSION['names_of_allergens_not_in_meal'] = $selectedAllergens;
+        $_SESSION['rating'] = $rating;
+        $_SESSION['review'] = $review;
+        
+        
+        require_once("meal_add_success.php");
         break;
     
-    case "full_meal_submission":
-        //insert meal and restaurant
-        //still have to add to mealAllergen and mealReataurant Tables...i think
+    case "addSearchCategory":
+        require_once("../allergen_manager/allergen_add_form.php");
         break;
     
     case "get_meal_details":
@@ -68,13 +98,8 @@ switch($controllerChoice) {
         
         //get array of all ratings of meal
         $ratingsArray = ReviewDB::getMealRatings($mealId);
-        
-        $avgRating = null;
-        //get average of ratings, rounded to one decimal place
-        if(count($ratingsArray) > 0){
-            $avgRating = round((float)array_sum($ratingsArray) / count($ratingsArray), 1);
-        }        
-        
+        $avgRating = getAverageRating($ratingsArray);
+                
         //get reviews for meal, ordered by newest to oldest
         $reviewsArray = ReviewDB::getMealReviews($mealId);
                 
@@ -102,12 +127,8 @@ switch($controllerChoice) {
         //get array of all ratings of meal
         $ratingsArray = ReviewDB::getMealRatings($mealId);
         
-        $avgRating = null;
-        //get average of ratings, rounded to one decimal place
-        if(count($ratingsArray) > 0){
-            $avgRating = round((float)array_sum($ratingsArray) / count($ratingsArray), 1);
-        }  
-        
+        $avgRating = getAverageRating($ratingsArray);
+
         //get updated list of reviews
         $reviewsArray = ReviewDB::getMealReviews($mealId);
         
@@ -121,16 +142,13 @@ switch($controllerChoice) {
         /*in this case, the user added meal info, but couldn't find the
          * restaurant in the drop-down. This method saves all the necessary meal data to the session,
         then redirects to the restaurant add form. All the DB inserts will
-        take place in restaurant_manager/indexp.php     */
+        take place in restaurant_manager/index.php     */
         
         //get the checked allergens and add to an array for mealAllergen table
         $selectedAllergens = array();
             if(!empty($_POST['check_list'])){
             // Loop to store and display values of individual checked checkbox.
-                foreach($_POST['check_list'] as $selected){
-//                    $allergen = new Allergen(
-//                            0,$selected);
-                    
+                foreach($_POST['check_list'] as $selected){                    
                     $selectedAllergens[]= $selected;
                 }
             }            
@@ -198,11 +216,13 @@ switch($controllerChoice) {
                     array_push($allergenIDArray, AllergenDB::getAllergenIdFromName($allergenName));
                 }                
             }
-            getAndSetInSessionMealsAndRestuaraunts($allergenIDArray, $searchLocation);    
+//            getAndSetInSessionMealsAndRestuaraunts($allergenIDArray, $searchLocation);    
             $_SESSION['allergensChosen'] = $allergenNameArray;
             
             $findOrAvoidSelected = true;
          }         
+         
+         
          
          if($findOrAvoidSelected == false){//if no allergens were chosen, display an appropriate message explaining that, then return a full list of meals and restaurants for 
              //that location
@@ -220,21 +240,15 @@ switch($controllerChoice) {
              $_SESSION['allergensChosen'] = null;
              $_SESSION['meals'] = $meals;
              $_SESSION['restaurants'] = $restaurants;
-            }                                    
+            }
+            else{
+                getAndSetInSessionMealsAndRestuaraunts($allergenIDArray, $searchLocation); 
+            }
             
             $_SESSION['allergenIDArray'] = $allergenIDArray;
             
         require_once('meal_results.php');
         break;
-    
-    case "submit_add_meal":
-        require_once("meal_add_success.php");
-        break;
-    
-//    case "submit_review":
-//        //add review to database based on meal ID in parameter
-//        require_once("../index.php");
-//        break;
     
     default:
         require_once '../view/header.php';
@@ -358,4 +372,14 @@ function getAllergensFromFindSelected($findArray){
     
     return $allergenIDArray;
 }
+
+function getAverageRating($ratingsArray){
+    $avgRating = null;
+    if(count($ratingsArray) > 0){
+            $avgRating = round((float)array_sum($ratingsArray) / count($ratingsArray), 1);
+        }  
+        
+        return $avgRating;
+}
+
 ?>

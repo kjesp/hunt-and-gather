@@ -27,19 +27,16 @@ require_once '../view/header.php';?>
         <label>Meal Name:</label>        
         <input required type="text" name="meal_name"><br>        
 </div>        
-    
-    <p>I'd rather this be a select here with 
-                 multiline selection (without holding control) possible...JavaScript?</p>
-     
-    
+       
     <fieldset class="group">         
             <legend>This meal does NOT contain:</legend> 
             <h3>Just choose what matters to you - others can adjust this meal too.</h3>
-            <ul class="checkbox">                        
+            <ul class="checkbox list-unstyled">                        
                  <?php foreach ($allergensArray as $al) : ?>                
                 <li><input type="checkbox" name="check_list[]" value="<?php echo $al->getName(); ?>" value="" />
                     <label for=""><?php echo $al->getName(); ?></label></li>                             
                 <?php endforeach; ?>
+            </ul>
     </fieldset>                     
     
  <div class="form-row">
