@@ -84,7 +84,10 @@ class AllergenDB{
     public static function getAllergenIDsForMeal($mealId){
          $db = Database::getDB();
         
-        $query = 'SELECT * FROM allergenMeal WHERE meal_id = :id';
+        $query = 'SELECT a.id '
+                . 'from allergenmeal am '
+                . 'join allergen a on a.id = am.allergen_id '
+                . 'WHERE meal_id = :id';
         $statement = $db->prepare($query);
         $statement->bindValue(':id', $mealId);
         $statement->execute();
@@ -98,11 +101,13 @@ class AllergenDB{
         }
         return $allergenIDArray;
     }
-    
-    public static function getAllergenIDsExcludedFromMeal($mealId){
+     public static function getAllergenIDsExcludedFromMeal($mealId){
          $db = Database::getDB();
         
-        $query = 'SELECT * FROM allergennotinmeal WHERE meal_id = :id';
+        $query = 'SELECT a.id '
+                . 'from allergennotinmeal am '
+                . 'join allergen a on a.id = am.allergen_id '
+                . 'WHERE meal_id = :id';
         $statement = $db->prepare($query);
         $statement->bindValue(':id', $mealId);
         $statement->execute();
@@ -116,14 +121,13 @@ class AllergenDB{
         }
         return $allergenIDArray;
     }
-    
-    
     
     public static function getAllergenNamesForMeal($mealId){
          $db = Database::getDB();
         
-        $query = '  select a.name from allergen a
-                    join allergenmeal am on am.allergen_id = a.id
+        $query = '  select a.name 
+                    from allergenmeal am
+                    join allergen a on a.id = am.allergen_id
                     where am.meal_id = :mealId';
         $statement = $db->prepare($query);
         $statement->bindValue(':mealId', $mealId);
@@ -139,11 +143,14 @@ class AllergenDB{
         return $allergenNameArray;
     }  
     
+   
+    
     public static function getAllergenNamesExcludedFromMeal($mealId){
          $db = Database::getDB();
         
-        $query = '  select a.name from allergen a
-                    join allergennotinmeal am on am.allergen_id = a.id
+        $query = 'select a.name 
+                    from allergennotinmeal am
+                    join allergen a on a.id = am.allergen_id
                     where am.meal_id = :mealId';
         $statement = $db->prepare($query);
         $statement->bindValue(':mealId', $mealId);

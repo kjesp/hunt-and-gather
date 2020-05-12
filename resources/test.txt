@@ -1,1 +1,35 @@
 test doc
+
+
+  
+        
+        //TESTING
+        foreach($allAllergensList as $al){
+            echo $al->getName();            
+        }
+        ;?>
+<br>
+    <?php
+        foreach($fullAllergenListMinusAllergensExcludedFromMeal as $al){
+            echo $al->getName();
+        }
+        ;?>
+<br>
+    <?php
+die;
+
+was trying to disable the ids already in an array - doesn't work
+ <ul class="checkbox list-unstyled">                        
+                 <?php foreach ($allAllergensList as $al) : ?>                
+                
+                <!-- if allergen is already in meal, show box as disabled and checked-->
+                <?php if(in_array($allergen, $fullAllergenListMinusAllergensExcludedFromMeal)): ?>
+                <li><input type="checkbox" disabled=""name="check_list[]" value="<?php echo $al->getName(); ?>" value="" />
+                    <label for=""><?php echo $al->getName(); ?></label></li>
+                <?php else: ?>
+                    <li><input type="checkbox" name="check_list[]" value="<?php echo $al->getName(); ?>" value="" />
+                        <label for=""><?php echo $al->getName(); ?></label></li>
+                <?php endif; ?>
+                <?php endforeach; ?>
+            </ul>
+        

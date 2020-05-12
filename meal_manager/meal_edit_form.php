@@ -39,7 +39,7 @@ $meal = $_SESSION['meal'];
             array_push($fullAllergenListMinusAllergensExcludedFromMeal, $allergen);                                
             }
         }
-        
+              
         
                 
         //get array of all ratings of meal
@@ -63,16 +63,17 @@ require_once '../view/header.php';?>
     
        
     <fieldset class="group">         
-            <legend>This meal does NOT contain:  
+        <legend>This meal already <strong>does NOT</strong> contain:  
                         <?php  $stringListOfAllergens = "";
-                            if($allergenNamesNotInMeal == null || $allergenNamesNotInMeal == ""): ?>
+                            if($allergenNamesNotInMeal == null || $allergenNamesNotInMeal == "" || $allergenNamesNotInMeal == 0): ?>
                         <?php else: ?>     
                             <?php foreach($allergenNamesNotInMeal as $a) : ?>
                              <?php $stringListOfAllergens = $stringListOfAllergens.$a.", "; ?>         
                         <?php endforeach; ?> 
                         <?php echo substr_replace($stringListOfAllergens ,"",-2) ?>
                     <?php endif; ?> 
-            </legend> 
+            </legend>         
+        
             <h3>Just choose what matters to you - others can adjust this meal too.</h3>
             <ul class="checkbox list-unstyled">                        
                  <?php foreach ($fullAllergenListMinusAllergensExcludedFromMeal as $al) : ?>                
@@ -80,12 +81,13 @@ require_once '../view/header.php';?>
                     <label for=""><?php echo $al->getName(); ?></label></li>                             
                 <?php endforeach; ?>
             </ul>
+           
     </fieldset>      
     
     <fieldset class="group">         
-            <legend>This meal DOES contain:  
+        <legend>This <strong>already</strong> contains:  
                         <?php  $stringListOfAllergens = "";
-                            if($allergenNamesInMeal == null || $allergenNamesInMeal == ""): ?>
+                            if($allergenNamesInMeal == null || $allergenNamesInMeal == "" || $allergenNamesInMeal == 0): ?>
                         <?php else: ?>     
                             <?php foreach($allergenNamesInMeal as $a) : ?>
                              <?php $stringListOfAllergens = $stringListOfAllergens.$a.", "; ?>         

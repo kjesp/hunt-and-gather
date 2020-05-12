@@ -156,8 +156,7 @@ switch($controllerChoice) {
     
     case "redirect_to_edit_meal":
         $mealId = filter_input(INPUT_POST, 'meal_id');
-        $_SESSION['meal'] = MealDB::getMealById($mealId);
-        
+        $_SESSION['meal'] = MealDB::getMealById($mealId);        
         require_once("meal_edit_form.php");
         break;
     
