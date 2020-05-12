@@ -7,9 +7,28 @@ if(session_id() == ''){
 }
 
 $meal = $_SESSION['meal']; 
-$allergensInMeal = $_SESSION['allergensInMeal'];
-$averageRating = $_SESSION['averageRating'];
-$reviews = $_SESSION['reviewsForMeal'];
+    //get names of allergens in meal and allergens not in meal for display
+        $mealId = $meal->getId();
+        $allergenNamesInMeal = AllergenDB::getAllergenNamesForMeal($mealId);
+        $allergenNamesNotInMeal = AllergenDB::getAllergenNamesExcludedFromMeal($mealId);
+        $allergenIDsInMeal = AllergenDB::getAllergenIDsForMeal($mealId);
+        $allergendIDsNotInMeal = AllergenDB::getAllergenIDsExcludedFromMeal($mealId);
+                
+        //get array of all ratings of meal
+        $ratingsArray = ReviewDB::getMealRatings($mealId);
+        $averageRating = getAverageRating($ratingsArray);
+                
+        //get reviews for meal, ordered by newest to oldest
+        $reviews = ReviewDB::getMealReviews($mealId);
+        
+        
+
+
+//$allergensInMeal = 
+//$allergensInMeal = $_SESSION['allergensInMeal'];
+//$averageRating = $_SESSION['averageRating'];
+//$reviews = $_SESSION['reviewsForMeal'];
+//$allergensNotInMeal = $_SESSION[''];
 ?>
       
 
@@ -21,10 +40,24 @@ $reviews = $_SESSION['reviewsForMeal'];
                     $restaurantName = RestaurantDB::getNameUsingId($meal->getRestaurant_id());           
                     echo $restaurantName;  ?></h2>
 
-<h2>This meal contains the following allergens:</h2>
-    <?php foreach ($allergensInMeal as $al) : ?>   
+<h2>This meal <strong>contains</strong> these allergens:</h2>
+    <?php foreach ($allergenNamesInMeal as $al) : ?>   
     <label for=""><?php echo $al; ?></label><br>
     <?php endforeach; ?>
+    <br>
+    <h2>and <strong>is free of </strong> these allergens:</h2>
+    <?php foreach ($allergenNamesNotInMeal as $al) : ?>   
+    <label for=""><?php echo $al; ?></label><br>
+    <?php endforeach; ?>
+    
+    <h3>This meal may contain or be free of allergens that users have not yet entered. Do you know more this meal?</h3>
+    <form id="redirect_to_edit_meal" action="meal_manager/index.php" method="post">
+        <input type="hidden" name="meal_id" value="<?php echo $meal->getId()?>">
+        <input type="hidden" name="controllerRequest" value="redirect_to_edit_meal"> 
+    <input class="btn btn-green" type="submit" value="Edit this Meal" id="button"><br>
+    </form>
+<br> 
+    
     
     <form action="meal_manager/index.php" method="post">
          <div class="form-row">
@@ -43,7 +76,7 @@ $reviews = $_SESSION['reviewsForMeal'];
         <input required type="text" name="review" ><br>
         </div>
          <input type="hidden" name="controllerRequest" value="rate_meal"> 
-         <input type="submit" name="rate_meal" value="Rate this Meal" id="button"><br>  
+         <input class="btn btn-green" type="submit" name="rate_meal" value="Rate this Meal" id="button"><br>  
         </form> 
 
     

@@ -18,10 +18,10 @@ $restaurantsArray = RestaurantDB::getRestaurantList();
 
 require_once '../view/header.php';?>     
 
+
 <h1>Add a Meal</h1>
 
-
-<form id="add_meal_only" action="meal_manager/index.php" method="post">
+<form id="add_meal_only" action="meal_manager/index.php" onsubmit="return CheckForm()" method="post">
         
 <div class="form-row">
         <label>Meal Name:</label>        
@@ -43,7 +43,7 @@ require_once '../view/header.php';?>
     <label>Restaurant:</label>
     <select name="restaurant">
         <?php foreach ($restaurantsArray as $rest) : ?>  
-        <option name="<?php echo $rest->getName(); ?>"><?php echo $rest->getName(); ?></option>
+        <option name="<?php echo $rest->getName(); ?>" value='<?php echo $rest->getId(); ?>'><?php echo $rest->getName(); ?></option>
         <?php endforeach; ?>
     </select>
 </div>
@@ -65,7 +65,7 @@ require_once '../view/header.php';?>
         <input type="text" name="review" ><br>
         </div>
               
-        <input type="submit" name="full_meal_submission" value="Add Meal" id="button"><br>  
+        <input type="submit" name="add_meal_only" value="Add Meal" id="submit_meal_button"><br>  
         </form>  
     
     <?php require_once '../view/footer.php';?> 

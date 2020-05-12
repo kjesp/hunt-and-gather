@@ -36,4 +36,23 @@ class JoinTableDb{
         $statement->execute();
         $statement->closeCursor();
     }
+
+
+public static function insertAllergenMealExclude($allergenID, $mealID){
+        $db = Database::getDB();
+        $allergen_id = $allergenID;
+        $meal_id = $mealID;
+        
+        $query = 'INSERT INTO allergenNotInMeal
+            (allergen_id, meal_id)
+                  VALUES
+                        (:allergen_id,
+                        :meal_id)';
+        
+        $statement = $db->prepare($query);
+        $statement->bindValue(':allergen_id', $allergen_id);
+        $statement->bindValue(':meal_id', $meal_id);
+        $statement->execute();
+        $statement->closeCursor();
+    }
 }

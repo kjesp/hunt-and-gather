@@ -20,6 +20,7 @@ class MealDB{
         $statement->execute();
         $meal->setId($db->lastInsertId());
         $statement->closeCursor();
+        
     }  
         
        public static function getMealList(){

@@ -63,6 +63,14 @@ CREATE TABLE `allergenMeal` (
   `meal_id` int(11) NOT NULL
 );
 
+CREATE TABLE `allergenNotInMeal` (
+  `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `allergen_id` int(11) NOT NULL,
+  `meal_id` int(11) NOT NULL
+);
+
+
+
 CREATE TABLE `endUserAllergen` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `endUser_id` int(11) NOT NULL,
@@ -85,6 +93,10 @@ ALTER TABLE `mealRestaurant` ADD FOREIGN KEY (`meal_id`) REFERENCES `meal` (`id`
 ALTER TABLE `allergenMeal` ADD FOREIGN KEY (`allergen_id`) REFERENCES `allergen` (`id`);
 
 ALTER TABLE `allergenMeal` ADD FOREIGN KEY (`meal_id`) REFERENCES `meal` (`id`);
+
+ALTER TABLE `allergenNotInMeal` ADD FOREIGN KEY (`allergen_id`) REFERENCES `allergen` (`id`);
+
+ALTER TABLE `allergenNotInMeal` ADD FOREIGN KEY (`meal_id`) REFERENCES `meal` (`id`);
 
 ALTER TABLE `endUserAllergen` ADD FOREIGN KEY (`allergen_id`) REFERENCES `allergen` (`id`);
 
@@ -117,9 +129,9 @@ insert into restaurant VALUES
 
 insert into meal VALUES
 -- (1,'Dunkin Burrito Bowl', 1, 1, NOW()),
-(1,'Dunkin has Egg, Soy, Milk', 1, 1, NOW()),
+(1,'Dunkin has Egg, Soy, Milk; No beef', 1, 1, NOW()),
 -- (2,'Test Meal', 1, 1, NOW()),
-(2,'Luce has Chicken', 2, 1, NOW()),
+(2,'Luce has Chicken; No Egg', 2, 1, NOW()),
 -- (3,'WholegrainSausage McMuffin with Egg', 3, 1, NOW()),
 (3,'Mcdonalds has Egg, Soy, Milk, Wheat, Pork', 3, 1, NOW()),
 -- (4,'Meal with all Allergens', 4, 1, NOW()),
@@ -166,6 +178,7 @@ insert into allergen VALUES
 (28, 'Balsam of Peru'),
 (29, 'Milk'),
 (30, 'test');
+
 insert into allergenMeal VALUES
 (1, 2, 3),
 (2, 29, 3),
@@ -205,6 +218,10 @@ insert into allergenMeal VALUES
 (36, 29, 4), 
 (37, 8, 1),
 (38, 22, 2);
+
+insert into allergenNotInMeal VALUES
+(1, 6, 1),
+(2, 2, 2);
 
 insert into endUserAllergen VALUES
 (1, 1, 1),

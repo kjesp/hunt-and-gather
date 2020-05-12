@@ -8,6 +8,7 @@ require('../model/review_db.php');
 require('../model/restaurant_db.php');
 require('../model/restaurant.php');
 require('../model/review.php');
+require('../model/join_table_db.php');
 
         
 if(session_id() == ''){
@@ -41,8 +42,8 @@ if($controllerChoice == NULL){
 
 //the meal add form has two submit buttons, so the following code uses the 
 //names of those buttons to manually set the controllerChoice value in that instance
-if(isset($_POST["full_meal_submission"])){
-    $controllerChoice = "full_meal_submission";
+if(isset($_POST["add_meal_only"])){
+    $controllerChoice = "add_meal_only";
 }
 else if(isset($_POST["redirect_meal_to_restaurant_add_form"])){
     $controllerChoice = "redirect_meal_to_restaurant_add_form";
@@ -51,33 +52,48 @@ else if(isset($_POST["redirect_meal_to_restaurant_add_form"])){
 switch($controllerChoice) {
     
     case "add_meal_only":
-        $selectedAllergens = array();
+        //get allergens selected (these are NOT in the meal)
+        $selectedAllergensNotInMeal = array();
             if(!empty($_POST['check_list'])){
             // Loop to store and display values of individual checked checkbox.
                 foreach($_POST['check_list'] as $selected){                    
-                    $selectedAllergens[]= $selected;
+                    $selectedAllergensNotInMeal[]= $selected;
                 }
-            }            
-                
-        //info for review table
-        $rating = filter_input(INPUT_POST, 'rating');
-        $review = filter_input(INPUT_POST, 'review');
+            }                
+            
+        //get restaurant
+        $restaurantId = filter_input(INPUT_POST, 'restaurant');
+        $restaurant = RestaurantDB::getRestaurantById($restaurantId);       
         
         //info for meal table
-        $id=0;        
         $mealName = filter_input(INPUT_POST, 'meal_name');
-        $restaurantId = null;
         $isOfficial = false;
         
         //capitalize the words in the name if they aren't already
         $lowerCaseMealName = strtolower($mealName); //first lower case
         $firstLettersCapitalMealName = ucwords($lowerCaseMealName);  //then capitalize the first letters    
         
-        //create meal object for saving to session
-        $meal = new Meal($id, $firstLettersCapitalMealName, $restaurantId, $isOfficial, null);      
+        //create meal object and add to meal table
+        $meal = new Meal(0, $firstLettersCapitalMealName, $restaurantId, $isOfficial, null);   
+        MealDB::add_meal($meal);
+        
+        //info for review table
+        $endUserId=1;
+        $mealId = $meal->getId();
+        $rating = filter_input(INPUT_POST, 'rating');
+        $comment = filter_input(INPUT_POST, 'review');
+        
+        //create a review object and add to review table
+        $review = new Review(0, $endUserId, $restaurantId, $mealId, $comment, $rating, null);
+        ReviewDB::add_Review($review);
+        
+        //join table inserts:        
+        JoinTableDb::insertMealRestaurantJoinTable($mealId, $restaurantId);        
+        insertAllergenMealExclude($selectedAllergensNotInMeal, $mealId);                       
                
         $_SESSION['meal'] = $meal;
-        $_SESSION['names_of_allergens_not_in_meal'] = $selectedAllergens;
+        $_SESSION['restaurant'] = $restaurant;
+        $_SESSION['names_of_allergens_not_in_meal'] = $selectedAllergensNotInMeal;
         $_SESSION['rating'] = $rating;
         $_SESSION['review'] = $review;
         
@@ -93,20 +109,20 @@ switch($controllerChoice) {
         $mealId = filter_input(INPUT_POST, 'meal_id');
         $meal = MealDB::getMealById($mealId);
         
-        //array of allergen names in meal
-        $allergenNamesArray = AllergenDB::getAllergenNamesForMeal($mealId);
-        
-        //get array of all ratings of meal
-        $ratingsArray = ReviewDB::getMealRatings($mealId);
-        $avgRating = getAverageRating($ratingsArray);
-                
-        //get reviews for meal, ordered by newest to oldest
-        $reviewsArray = ReviewDB::getMealReviews($mealId);
-                
-        $_SESSION['reviewsForMeal'] = $reviewsArray;
-        $_SESSION['averageRating'] = $avgRating;
+//        //array of allergen names in meal
+//        $allergenNamesArray = AllergenDB::getAllergenNamesForMeal($mealId);
+//        
+//        //get array of all ratings of meal
+//        $ratingsArray = ReviewDB::getMealRatings($mealId);
+//        $avgRating = getAverageRating($ratingsArray);
+//                
+//        //get reviews for meal, ordered by newest to oldest
+//        $reviewsArray = ReviewDB::getMealReviews($mealId);
+//                
+//        $_SESSION['reviewsForMeal'] = $reviewsArray;
+//        $_SESSION['averageRating'] = $avgRating;
         $_SESSION['meal'] = $meal;
-        $_SESSION['allergensInMeal'] = $allergenNamesArray;
+//        $_SESSION['allergensInMeal'] = $allergenNamesArray;
         
         require_once("meal_detail.php");
         break;
@@ -138,6 +154,13 @@ switch($controllerChoice) {
         require_once("meal_detail.php");
         break;
     
+    case "redirect_to_edit_meal":
+        $mealId = filter_input(INPUT_POST, 'meal_id');
+        $_SESSION['meal'] = MealDB::getMealById($mealId);
+        
+        require_once("meal_edit_form.php");
+        break;
+    
      case "redirect_meal_to_restaurant_add_form";
         /*in this case, the user added meal info, but couldn't find the
          * restaurant in the drop-down. This method saves all the necessary meal data to the session,
@@ -145,11 +168,11 @@ switch($controllerChoice) {
         take place in restaurant_manager/index.php     */
         
         //get the checked allergens and add to an array for mealAllergen table
-        $selectedAllergens = array();
+        $selectedAllergensNotInMeal = array();
             if(!empty($_POST['check_list'])){
             // Loop to store and display values of individual checked checkbox.
                 foreach($_POST['check_list'] as $selected){                    
-                    $selectedAllergens[]= $selected;
+                    $selectedAllergensNotInMeal[]= $selected;
                 }
             }            
                 
@@ -171,7 +194,7 @@ switch($controllerChoice) {
         $meal = new Meal($id, $firstLettersCapitalMealName, $restaurantId, $isOfficial, null);      
                
         $_SESSION['meal'] = $meal;
-        $_SESSION['names_of_allergens_not_in_meal'] = $selectedAllergens;
+        $_SESSION['names_of_allergens_not_in_meal'] = $selectedAllergensNotInMeal;
         $_SESSION['rating'] = $rating;
         $_SESSION['review'] = $review;
        
@@ -252,7 +275,7 @@ switch($controllerChoice) {
     
     default:
         require_once '../view/header.php';
-        echo '<h2> controllerChoice: $controllerChoice</h2>';
+        echo '<h2> controllerChoice:'.$controllerChoice.'</h2>';
         echo'<h3> File: user_manager/index.php</h3>';
         require_once '../view/footer.php';
         
@@ -380,6 +403,13 @@ function getAverageRating($ratingsArray){
         }  
         
         return $avgRating;
+}
+
+function insertAllergenMealExclude($selectedAllergensNotInMeal, $mealId){
+        
+        foreach($selectedAllergensNotInMeal as $allergenName){
+            JoinTableDb::insertAllergenMealExclude(AllergenDB::getAllergenIdFromName($allergenName), $mealId);
+        }
 }
 
 ?>

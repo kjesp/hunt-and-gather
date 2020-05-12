@@ -99,6 +99,26 @@ class AllergenDB{
         return $allergenIDArray;
     }
     
+    public static function getAllergenIDsExcludedFromMeal($mealId){
+         $db = Database::getDB();
+        
+        $query = 'SELECT * FROM allergennotinmeal WHERE meal_id = :id';
+        $statement = $db->prepare($query);
+        $statement->bindValue(':id', $mealId);
+        $statement->execute();
+        $records = $statement->fetchAll();
+        $statement->closeCursor();
+        
+        $allergenIDArray = array();
+        
+        foreach ($records as $record) {
+            $allergenIDArray[] = (int)$record['id'];
+        }
+        return $allergenIDArray;
+    }
+    
+    
+    
     public static function getAllergenNamesForMeal($mealId){
          $db = Database::getDB();
         
@@ -117,8 +137,26 @@ class AllergenDB{
             $allergenNameArray[] = $record['name'];
         }
         return $allergenNameArray;
-    }
+    }  
     
-   
+    public static function getAllergenNamesExcludedFromMeal($mealId){
+         $db = Database::getDB();
+        
+        $query = '  select a.name from allergen a
+                    join allergennotinmeal am on am.allergen_id = a.id
+                    where am.meal_id = :mealId';
+        $statement = $db->prepare($query);
+        $statement->bindValue(':mealId', $mealId);
+        $statement->execute();
+        $records = $statement->fetchAll();
+        $statement->closeCursor();
+        
+        $allergenNameArray = array();
+        
+        foreach ($records as $record) {
+            $allergenNameArray[] = $record['name'];
+        }
+        return $allergenNameArray;
+    }  
 }
 

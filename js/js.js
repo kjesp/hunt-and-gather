@@ -17,8 +17,28 @@ var showMealOrRestDiv = function() {
     }
 };
 
+     function CheckForm(){
+	var checked=false;
+	var elements = document.getElementsByName("check_list[]");
+	for(var i=0; i < elements.length; i++){
+		if(elements[i].checked) {
+			checked = true;
+		}
+	}
+	if (!checked) {
+		alert('Please select at least one allergen.');
+	}
+	return checked;
+}
+     
+     
+
 window.onload = function(){
-    $("view_meal_or_rest").onchange = showMealOrRestDiv;
+    //alert("onload");
+    if($("view_meal_or_rest") !== null){
+        $("view_meal_or_rest").onchange = showMealOrRestDiv;
+    }
+    
 };
 
 
