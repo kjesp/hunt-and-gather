@@ -22,32 +22,51 @@ $meal = $_SESSION['meal'];
         
         $allergenNamesInMeal = AllergenDB::getAllergenNamesForMeal($mealId);
         $allergenNamesNotInMeal = AllergenDB::getAllergenNamesExcludedFromMeal($mealId);
-        
+       
         $allergenIDsInMeal = AllergenDB::getAllergenIDsForMeal($mealId);
-        //get a list of all allergens to display, but don't include the ones that were have already been included in the meal
-        $fullAllergenListMinusAllergensInMeal = array();        
-        foreach($allAllergensList as $allergen){ 
-            if(!in_array($allergen->getId(), $allergenIDsInMeal)){
-            array_push($fullAllergenListMinusAllergensInMeal, $allergen);                                
-            }
-        }
-        //get a list of all allergens to display, but don't include the ones that were have already been excluded from the meal
-        $allergendIDsNotInMeal = AllergenDB::getAllergenIDsExcludedFromMeal($mealId);  
-        $fullAllergenListMinusAllergensExcludedFromMeal = array();        
-        foreach($allAllergensList as $allergen){ 
-            if(!in_array($allergen->getId(), $allergendIDsNotInMeal)){
-            array_push($fullAllergenListMinusAllergensExcludedFromMeal, $allergen);                                
-            }
-        }
-              
+        $allergendIDsNotInMeal = AllergenDB::getAllergenIDsExcludedFromMeal($mealId);        
+
+    //get a list of all allergens to display, but don't include the ones that were have already been included in or excluded from meal
+        $displayList = array();        
         
-                
-        //get array of all ratings of meal
-        $ratingsArray = ReviewDB::getMealRatings($mealId);
-        $averageRating = getAverageRating($ratingsArray);
-                
-        //get reviews for meal, ordered by newest to oldest
-        $reviews = ReviewDB::getMealReviews($mealId);
+        foreach($allAllergensList as $allergen){ 
+            $inMeal = isAllergenInMeal($allergen, $allergenIDsInMeal);
+            $excludedFromMeal = isAllergenExcludedFromMeal($allergen, $allergendIDsNotInMeal);
+            $inDisplayListAlready = isInDisplayListAlready($allergen, $displayList);
+            //if allergen is not included or excluded, and not in list already, add it
+            if($inMeal || $excludedFromMeal){
+                //nothing happens. I don't like this empty if, but i keep having errors when I try to reverse it
+            }
+            else if(!$inDisplayListAlready){
+                array_push($displayList, $allergen);
+            }            
+        }                   
+        
+        function isInDisplayListAlready($allergen, $displayList){
+            $isInDisplayList = false;
+            
+            if(in_array($allergen, $displayList)){
+                $isInDisplayList = true;
+            }
+            return $isInDisplayList;
+        }        
+        
+        function isAllergenInMeal($allergen, $allergenIDsInMeal){
+            $inMeal = false;
+            
+            if(in_array($allergen->getId(), $allergenIDsInMeal)){
+                $inMeal = true;
+            }
+            return $inMeal;            
+        }
+        
+        function isAllergenExcludedFromMeal($allergen, $allergendIDsNotInMeal){
+            $excludedFromMeal = false;
+             if(in_array($allergen->getId(), $allergendIDsNotInMeal)){
+                 $excludedFromMeal = true;
+             }
+            return $excludedFromMeal;            
+        }        
 
 require_once '../view/header.php';?>     
 
@@ -63,7 +82,7 @@ require_once '../view/header.php';?>
     
        
     <fieldset class="group">         
-        <legend>This meal already <strong>does NOT</strong> contain:  
+        <h1>This meal already <strong>does NOT</strong> contain:  
                         <?php  $stringListOfAllergens = "";
                             if($allergenNamesNotInMeal == null || $allergenNamesNotInMeal == "" || $allergenNamesNotInMeal == 0): ?>
                         <?php else: ?>     
@@ -72,12 +91,14 @@ require_once '../view/header.php';?>
                         <?php endforeach; ?> 
                         <?php echo substr_replace($stringListOfAllergens ,"",-2) ?>
                     <?php endif; ?> 
-            </legend>         
+            </h1>               
         
-            <h3>Just choose what matters to you - others can adjust this meal too.</h3>
+        <h3>Do you disagree?</h3>
+        <input class="btn btn-danger" type="submit" name="dispute_not_in_meal" value="Dispute a Meal" id="submit_meal_button"><br> 
+        <h3>What else is <strong>not</strong> in this meal? (Just choose what matters to you - others can adjust this meal too.)</h3>
             <ul class="checkbox list-unstyled">                        
-                 <?php foreach ($fullAllergenListMinusAllergensExcludedFromMeal as $al) : ?>                
-                <li><input type="checkbox" name="check_list[]" value="<?php echo $al->getName(); ?>" value="" />
+                 <?php foreach ($displayList as $al) : ?>                
+                <li><input type="checkbox" name="notInMealChecklist[]" value="<?php echo $al->getName(); ?>" value="" />
                     <label for=""><?php echo $al->getName(); ?></label></li>                             
                 <?php endforeach; ?>
             </ul>
@@ -85,7 +106,7 @@ require_once '../view/header.php';?>
     </fieldset>      
     
     <fieldset class="group">         
-        <legend>This <strong>already</strong> contains:  
+        <h1>This <strong>already</strong> contains:  
                         <?php  $stringListOfAllergens = "";
                             if($allergenNamesInMeal == null || $allergenNamesInMeal == "" || $allergenNamesInMeal == 0): ?>
                         <?php else: ?>     
@@ -94,20 +115,20 @@ require_once '../view/header.php';?>
                         <?php endforeach; ?> 
                         <?php echo substr_replace($stringListOfAllergens ,"",-2) ?>
                     <?php endif; ?> 
-            </legend>  
-            <h3>Just choose what matters to you - others can adjust this meal too.</h3>
+            </h1>  
+        <h3>Do you disagree?</h3>
+        <input class="btn btn-danger" type="submit" name="dispute_in_meal" value="Dispute a Meal" id="submit_meal_button"><br> 
+            <h3>What else <strong>is</strong> in this meal? Just choose what matters to you - others can adjust this meal too.</h3>
             <ul class="checkbox list-unstyled">                        
-                 <?php foreach ($fullAllergenListMinusAllergensInMeal as $al) : ?>                
-                <li><input type="checkbox" name="check_list[]" value="<?php echo $al->getName(); ?>" value="" />
+                 <?php foreach ($displayList as $al) : ?>                
+                <li><input type="checkbox" name="inMealChecklist[]" value="<?php echo $al->getName(); ?>" value="" />
                     <label for=""><?php echo $al->getName(); ?></label></li>                             
                 <?php endforeach; ?>
             </ul>
     </fieldset> 
-    
-    
-          
               
         <input class="btn btn-green" type="submit" name="edit_meal" value="Submit Changes" id="submit_meal_button"><br>  
+        <input hidden name="controllerRequest" value="edit_meal">
         </form>  
     
     <?php require_once '../view/footer.php';?> 

@@ -15,6 +15,17 @@ CREATE TABLE `endUser` (
   `registration_date` datetime NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE `dispute` (
+	`id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    `isActive` bit NOT NULL DEFAULT 1,
+	`meal_id` int NOT NULL,
+    `allergen_id` int NOT NULL,
+    `explanation` varchar(300) NOT NULL,
+    `email` varchar(50),
+    `date_created` datetime NOT NULL DEFAULT (now()),
+    `admin notes` varchar(50)   
+    );
+
 CREATE TABLE `restaurant` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT, 
   `name` varChar(100) NOT NULL,
@@ -69,8 +80,6 @@ CREATE TABLE `allergenNotInMeal` (
   `meal_id` int(11) NOT NULL
 );
 
-
-
 CREATE TABLE `endUserAllergen` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `endUser_id` int(11) NOT NULL,
@@ -89,6 +98,10 @@ ALTER TABLE `mealRestaurant` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `resta
 ALTER TABLE `meal` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
 
 ALTER TABLE `mealRestaurant` ADD FOREIGN KEY (`meal_id`) REFERENCES `meal` (`id`);
+
+ALTER TABLE `dispute` ADD FOREIGN KEY (`allergen_id`) REFERENCES `allergen` (`id`);
+
+ALTER TABLE `dispute` ADD FOREIGN KEY (`meal_id`) REFERENCES `meal` (`id`);
 
 ALTER TABLE `allergenMeal` ADD FOREIGN KEY (`allergen_id`) REFERENCES `allergen` (`id`);
 

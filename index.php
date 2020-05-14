@@ -30,9 +30,13 @@ require_once 'view/header.php';?>
     <div class="p-2">
         <form action="meal_manager/index.php" method="post">
         <label>Search by location:</label>
-        <input placeholder="City or Zip" required type="text" name="search">               
+        <input placeholder="City or Zip" required type="text" name="search">  
+        
+        <input type="submit" value="Search" class="btn btn-green"><br>            
+        <input type="hidden" name="controllerRequest" value="search">
     </div>
 
+           
            
    <!--row-->
     <div class="p-2">
@@ -65,8 +69,8 @@ require_once 'view/header.php';?>
                           
 <!--row-->
     <div class="p-2">
-        <input type="submit" value="Search" class="button"><br>            
-        <input type="hidden" name="controllerRequest" value="search">     
+<!--        <input type="submit" value="Search" class="button"><br>            
+        <input type="hidden" name="controllerRequest" value="search">     -->
     </form>
     </div>
 

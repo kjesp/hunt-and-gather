@@ -9,6 +9,8 @@ require('../model/restaurant_db.php');
 require('../model/restaurant.php');
 require('../model/review.php');
 require('../model/join_table_db.php');
+require('../model/dispute.php');
+require('../model/dispute_db.php');
 
         
 if(session_id() == ''){
@@ -40,16 +42,49 @@ if($controllerChoice == NULL){
         } 
 }
 
-//the meal add form has two submit buttons, so the following code uses the 
-//names of those buttons to manually set the controllerChoice value in that instance
+/*the some forms have multiple submit buttons, so the following code uses the 
+names of those buttons to manually set the controllerChoice value in those instances */
 if(isset($_POST["add_meal_only"])){
     $controllerChoice = "add_meal_only";
 }
 else if(isset($_POST["redirect_meal_to_restaurant_add_form"])){
     $controllerChoice = "redirect_meal_to_restaurant_add_form";
 }
+else if(isset($_POST["dispute_not_in_meal"])){
+    $controllerChoice = "dispute_not_in_meal";
+}
+else if(isset($_POST["dispute_in_meal"])){
+    $controllerChoice = "dispute_in_meal";
+}
 
 switch($controllerChoice) {
+    
+    case "submit_dispute":
+        if(isset($_POST['check_list'])) {
+            $allergenNameArray = $_POST['check_list'];
+        }
+        $meal = $_SESSION['meal'];
+        $email = filter_input(INPUT_POST, 'email');
+        $explanation = filter_input(INPUT_POST, 'explanation');
+        
+        foreach($allergenNameArray as $allergenName){
+            $allergen = AllergenDB::getAllergenById(AllergenDB::getAllergenIdFromName($allergenName));
+            $dispute = new Dispute(0, $allergen->getId(), $meal->getId(), $explanation, $email, null);
+            DisputeDb::insertDispute($dispute);
+        }
+        
+        require_once('./dispute_submitted_success.php');
+        break;
+    
+    case "dispute_in_meal":               
+        $_SESSION['dispute'] = "inMeal";
+        require_once('./dispute_form.php');
+        break;
+    
+    case "dispute_not_in_meal":
+        $_SESSION['dispute'] = "notInMeal";
+        require_once('./dispute_form.php');
+        break;
     
     case "add_meal_only":
         //get allergens selected (these are NOT in the meal)
@@ -105,24 +140,39 @@ switch($controllerChoice) {
         require_once("../allergen_manager/allergen_add_form.php");
         break;
     
+    case "edit_meal":
+        $meal = $_SESSION["meal"];
+        
+        //if any allergens were selected, put them in an array (string array of names)
+         if(isset($_POST['inMealChecklist'])) {
+            $allergenNamesInMealArray = $_POST['inMealChecklist'];             
+            
+            //add each allergen to array if not already there
+            $allergenIDsInMealArray = array();            
+            foreach($allergenNamesInMealArray as $allergenName){
+                $allergen = AllergenDB::getAllergenById(AllergenDB::getAllergenIdFromName($allergenName));
+                JoinTableDb::insertAllergenMealJoinTable($allergen->getId(), $meal->getId());                         
+            }            
+         }
+         
+         if(isset($_POST['notInMealChecklist'])) {
+            $allergenNamesNotInMealArray = $_POST['notInMealChecklist'];             
+            
+            //add each allergen to array if not already there
+            $allergenIDsNotInMealArray = array();            
+            foreach($allergenNamesNotInMealArray as $allergenName){
+                $allergen = AllergenDB::getAllergenById(AllergenDB::getAllergenIdFromName($allergenName));
+                JoinTableDb::insertAllergenMealExclude($allergen->getId(), $meal->getId());                
+            }
+         }
+         
+        require_once("meal_detail.php");       
+        break;
+    
     case "get_meal_details":
         $mealId = filter_input(INPUT_POST, 'meal_id');
         $meal = MealDB::getMealById($mealId);
-        
-//        //array of allergen names in meal
-//        $allergenNamesArray = AllergenDB::getAllergenNamesForMeal($mealId);
-//        
-//        //get array of all ratings of meal
-//        $ratingsArray = ReviewDB::getMealRatings($mealId);
-//        $avgRating = getAverageRating($ratingsArray);
-//                
-//        //get reviews for meal, ordered by newest to oldest
-//        $reviewsArray = ReviewDB::getMealReviews($mealId);
-//                
-//        $_SESSION['reviewsForMeal'] = $reviewsArray;
-//        $_SESSION['averageRating'] = $avgRating;
         $_SESSION['meal'] = $meal;
-//        $_SESSION['allergensInMeal'] = $allergenNamesArray;
         
         require_once("meal_detail.php");
         break;

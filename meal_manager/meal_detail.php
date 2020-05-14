@@ -21,14 +21,6 @@ $meal = $_SESSION['meal'];
         //get reviews for meal, ordered by newest to oldest
         $reviews = ReviewDB::getMealReviews($mealId);
         
-        
-
-
-//$allergensInMeal = 
-//$allergensInMeal = $_SESSION['allergensInMeal'];
-//$averageRating = $_SESSION['averageRating'];
-//$reviews = $_SESSION['reviewsForMeal'];
-//$allergensNotInMeal = $_SESSION[''];
 ?>
       
 
@@ -50,7 +42,7 @@ $meal = $_SESSION['meal'];
     <label for=""><?php echo $al; ?></label><br>
     <?php endforeach; ?>
     
-    <h3>This meal may contain or be free of allergens that users have not yet entered. Do you know more this meal?</h3>
+    <h3>This meal may contain or be free of allergens that users have not yet entered. Do you know more about this meal?</h3>
     <form id="redirect_to_edit_meal" action="meal_manager/index.php" method="post">
         <input type="hidden" name="meal_id" value="<?php echo $meal->getId()?>">
         <input type="hidden" name="controllerRequest" value="redirect_to_edit_meal"> 
@@ -59,26 +51,6 @@ $meal = $_SESSION['meal'];
 <br> 
     
     
-    <form action="meal_manager/index.php" method="post">
-         <div class="form-row">
-        <label>What would you rate this meal?:</label>
-        <select name="rating">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select><br>
-        </div>
-        
-        <div class="form-row">
-        <label>Meal Review:</label>
-        <input required type="text" name="review" ><br>
-        </div>
-         <input type="hidden" name="controllerRequest" value="rate_meal"> 
-         <input class="btn btn-green" type="submit" name="rate_meal" value="Rate this Meal" id="button"><br>  
-        </form> 
-
     
 <h2>Average Rating (1-5):</h2>
 <label>
@@ -102,5 +74,24 @@ $meal = $_SESSION['meal'];
     
 <?php endif; ?>    
 </table>
+<form action="meal_manager/index.php" method="post">
+         <div class="form-row">
+        <label>What would you rate this meal?:</label>
+        <select name="rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select><br>
+        </div>
+        
+        <div class="form-row">
+        <label>Meal Review:</label>
+        <input required type="text" name="review" ><br>
+        </div>
+         <input type="hidden" name="controllerRequest" value="rate_meal"> 
+         <input class="btn btn-green" type="submit" name="rate_meal" value="Rate this Meal" id="button"><br>  
+        </form>
     
     <?php require_once '../view/footer.php';?> 
